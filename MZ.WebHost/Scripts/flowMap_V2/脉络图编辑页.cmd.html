@@ -1,0 +1,205 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>新增产品系列</title>
+    <link rel="stylesheet" href="../../Content/css/common/base.css"/>
+    <link rel="stylesheet" href="../../Content/css/common/flowMap.new.css"/>
+    <link rel="stylesheet" href="../../Scripts/Reference/colorPicker/css/colorpicker.css" type="text/css"/>
+    <link rel="stylesheet" href="../../Scripts/Reference/jQuery/jQueryUI/jquery-ui.css"/>
+    <link rel="stylesheet" href="../../Scripts/Reference/jQuery/jQueryUI/jquery-ui.structure.css"/>
+    <link rel="stylesheet" href="../../Scripts/Reference/jQuery/jQueryUI/jquery-ui.theme.css"/>
+    <style>
+        body, html, * {
+            font-size: 12px;
+        }
+
+        html {
+            overflow: hidden;
+        }
+
+        body {
+            background: #eee;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #YH-FM-newMenu, #YH-FM-pathMenu {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+<div id="YH-FM-toolBar">
+    <button id="YH-FM-drawLineBtn" class="YH-FM-btn">连线</button>
+    <button id="YH-FM-viewModeBtn" class="YH-FM-btn">预览/保存</button>
+    画布高度：<input id="YH-FM-canvasHeight" value="500"/> 画布宽度：<input id="YH-FM-canvasWidth" value="900"/>
+
+    边框：
+    <select id="YH-FM-initBoxBorderWidth" class="YH-FM-selectmenu">
+        <option selected="selected" value="1.5">1px</option>
+        <option value="2">2px</option>
+        <option value="2.5">3px</option>
+        <option value="3">4px</option>
+        <option value="3.5">5px</option>
+    </select>
+    <select id="YH-FM-initBoxBorderStyle" class="hidden" class="YH-FM-selectmenu">
+        <option selected="selected" value="">实线</option>
+        <option value="-">虚线</option>
+    </select>
+            <span id="YH-FM-initBorderColor" class="YH-FM-colorSelector">
+                <i style="background-color:#0000ff"></i>
+            </span>
+
+</div>
+<div id="YH-FM-body">
+    <div id="YH-FM-mindMap">
+        <!--此处放置YH-FM-mapData表单中mapTableBg的存放到后台的内容，如果后台无数据，则显示以下表格数据-->
+        <table id="YH-FM-bgTable">
+
+
+            <colgroup>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th class="theader-xy ui-resizable"></th>
+                <th  class="theader-x ui-resizable"><div class="boxCon"><span>右键编辑</span></div></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th class="theader-y ui-resizable" ><div class="boxCon"><span>右键编辑</span></div></th>
+                <td></td>
+            </tr>
+            </tbody>
+
+
+        </table>
+        <!--表格数据结束-->
+
+        <div id="YH-FM-canvas" style="top: 30px; left: 61px;">
+            <div id="YH-FM-bgBox">
+
+
+
+            </div>
+            <div id="YH-FM-lineLayer"></div>
+            <div id="YH-FM-boxDrop">
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="YH-FM-mapData" method="post" action="<!--后端填写对应提交地址，系统会通过ajax将表格数据提交-->" class="hidden">
+    <textarea name="mapXml"></textarea>
+    <textarea name="mapPath"></textarea>
+    <textarea name="mapBoxBg"></textarea>
+    <textarea name="mapTableBg"></textarea>
+</form>
+
+
+<script type="text/javascript" src="../../Scripts/Reference/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/jQuery/jQueryUI/jquery-ui.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/colorPicker/colorpicker.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/Ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/Ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/yinhoo.base.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/Common/raphael.js"></script>
+
+<script type="text/javascript" src="../../Scripts/Reference/seaJS/sea.js"></script>
+<script type="text/javascript" src="./app/flowMap.v2.js"></script>
+<script type="text/javascript" src="./app/flowMapBgTable.js"></script>
+<script type="text/javascript" src="./app/flowMapMenu.js"></script>
+<script type="text/javascript" src="./app/flowMapNode.js"></script>
+<script type="text/javascript" src="./app/flowMapSelectNodes.js"></script>
+<script type="text/javascript" src="./app/flowMapSvg.js"></script>
+<!--<script type="text/javascript" src="./dist/flowMap.v2.js"></script>-->
+<script>
+
+
+    seajs.use('flowMap', function (FlowMap) {
+        ;(function () {
+            //背景画布大小设置
+            $( "#YH-FM-canvasHeight" ).spinner({
+                min: 1,
+                step: 100 ,
+                change: function( event, ui ) {
+                    FlowMap.canvasResize({height: $(this).val()});
+                }
+            });
+            $( "#YH-FM-canvasWidth" ).spinner({
+                min: 1,
+                step: 100 ,
+                change: function( event, ui ) {
+                    FlowMap.canvasResize({width: $(this).val()});
+                }
+            });
+
+
+            $('#YH-FM-initBorderColor').ColorPicker({
+                color: '#0000ff',
+                onShow: function (colpkr) {
+                    $(colpkr).fadeIn(500);
+                    return false;
+                },
+                onHide: function (colpkr) {
+                    $(colpkr).fadeOut(500);
+                    return false;
+                },
+                onChange: function (hsb, hex, rgb) {
+                    $('#YH-FM-initBorderColor i').css('backgroundColor', '#' + hex);
+                    FlowMap.setPathStyle({
+                        strokeColor: '#' + hex
+                    })
+
+                }
+            });
+            $('#YH-FM-initBoxBorderWidth').selectmenu({
+                change: function( event, data ) {
+                    FlowMap.setPathStyle({
+                        strokeWidth: data.item.value
+                    })
+                }
+            });
+
+            $('#YH-FM-drawLineBtn').click(function (e) {
+                var $this = $(this);
+                if ($this.hasClass('YH-FM-highlight')) {
+                    $this.removeClass('YH-FM-highlight');
+                    FlowMap.setDrawLineState(false);
+                } else {
+                    $this.addClass('YH-FM-highlight');
+                    FlowMap.setDrawLineState(true);
+                }
+            })
+
+//显示展示视图
+            $('#YH-FM-viewModeBtn').click(function() {
+//    $('#YH-FM-flowMap').html('');
+//    $('#YH-FM-pop').show();
+                //FlowMap.saveData();
+
+                FlowMap.previewMap();
+            })
+            $(window).resize(function () {
+                $('#YH-FM-body').height($(window).height());
+            }).resize();
+
+        })();
+    });
+    seajs.use('flowMap', function (FlowMap) {
+        var str = '{"width":1000,"height":1600,"nodeId":7,"pStrokeWidth":"1.5","pStroke":"rgb(66, 66, 245)","lines":{"path_0_3":{"path":[["M",169,110],["V",182],["H",238]],"from":"0","to":3,"strokeDasharray":"-","lineType":1,"transform":[],"finalPath":[["M",169,110],["V",182],["H",238]]},"path_1_3":{"path":[["M",81,219],["H",91],["V",182],["H",238]],"from":1,"to":3,"strokeDasharray":"","lineType":2,"transform":[],"finalPath":[["M",81,219],["H",91],["V",182],["H",238]]},"path_3_2":{"path":[["M",273,166],["V",68],["H",370]],"from":3,"to":2,"strokeDasharray":"","lineType":1,"transform":[],"finalPath":[["M",273,166],["V",68],["H",316],["A",4,4,90,0,1,326,68],["H",370]]},"path_3_4":{"path":[["M",273,196],["V",235],["H",450]],"from":3,"to":4,"strokeDasharray":"","lineType":1,"transform":[],"finalPath":[["M",273,196],["V",235],["H",450]]},"path_4_5":{"path":[["M",485,219],["V",127],["H",321],["V",51],["H",319]],"from":4,"to":5,"strokeDasharray":"","lineType":1,"transform":[],"finalPath":[["M",485,219],["V",127],["H",321],["V",51],["H",319]]}}}';
+        FlowMap.initFlowMapEditor(JSON.parse(str));
+    })
+
+
+
+</script>
+</body>
+</html>

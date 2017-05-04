@@ -1,0 +1,8 @@
+1.重新生成该文件后记得
+将IE 8中 有报错的地方修改掉
+if:  修改为 'if':
+else: >>  'else':
+class: >> 'class':
+var:  >> 'var':
+default:[] >>  'default':[]
+for: >> 'for':

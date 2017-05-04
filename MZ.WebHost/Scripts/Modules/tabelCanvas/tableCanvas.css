@@ -1,0 +1,63 @@
+.yh-tc-tableCanvas .yh-tc-tplResizeTr{
+    height: 0!important;
+}
+.yh-tc-tableCanvas .yh-tc-tplResizeTr .ui-resizable{
+    height: 0!important;
+    padding: 0!important;
+}
+.yh-tc-tableCanvasEditor-body .yh-tc-tableCanvas .yh-tc-tplResizeTr .ui-resizable {
+    height:20px!important;
+}
+.yh-tc-tableCanvasEditor-body .yh-tc-tableCanvas .yh-tc-tplResizeTr{
+    height: auto;
+}
+.yh-tc-tableCanvasEditor-body .ui-resizable-handle {
+    background: #ccc;
+    height: 20px!important;
+}
+.yh-tc-tableCanvasEditor-body table, .yh-tc-tableCanvasEditor-body td {
+    border: 1px solid #999999;
+}
+.yh-tc-tableCanvasEditor-body td.active {
+    border: 2px dotted #ff6600;
+}
+.yh-tc-tableCanvasEditor-body {
+    height: 300px;
+    overflow-y: auto;
+    margin-top: 20px;
+    padding-right: 5px;
+}
+.yh-tc-forPlainCanvas{
+    display: none;
+}
+.yh-tc-isPlainCanvas .yh-tc-forPlainCanvas{
+    display: block;
+}
+.yh-tc-isPlainCanvas .yh-tc-forModifyTable{
+    display: none;
+}
+.yh-tc-tableCanvasEditor .yh-tc-colorPicker {
+    border: 1px solid #333;
+    border-radius: 3px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+.yh-tc-tableCanvas-alignBtns {
+    margin-left: 5px;
+    width: 120px;
+    display: inline-block;
+}
+.yh-tc-tableCanvas-alignBtns label{
+    display: inline-block;
+    width: 40px;
+}
+.yh-tc-tplCell, .yh-tc-tableCanvasEditor-body .yh-tc-tplCell.none
+{
+    display: none;
+}
+.yh-tc-tableCanvasEditor-body .yh-tc-tplCell
+{
+    display: block;
+}

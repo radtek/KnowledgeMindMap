@@ -1,0 +1,616 @@
+﻿<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<%@ Import Namespace="Yinhe.ProcessingCenter.Common" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        <asp:ContentPlaceHolder ID="TitleContent" runat="server" />
+        蒙正专家知识库 </title>
+    <%
+        DataOperation dataOp = new DataOperation();
+        int firstEnter = 1; //判断是否首次登陆变量
+        var isDrop = ViewContext.RouteData.Values["isDrop"] as String ?? "0"; //是否掉落
+        var isDropCompleted = ViewContext.RouteData.Values["isDropCompleted"] as String ?? "0"; //是否攻略
+        var avaiableDropTimes = ViewContext.RouteData.Values["avaiableDropTimes"] as String ?? "0"; //是否掉落次数为0
+        var nextAvaiableCoolTimeStr = ViewContext.RouteData.Values["nextAvaiableCoolTime"] as String ?? ""; //是否掉落次数为0
+        var pageCanDropItem = ViewContext.RouteData.Values["pageCanDropItem"] as String ?? ""; //页面是否可掉落道具
+        var nextItemDropHasCD = false;
+        var nextAvaiableCoolTime = DateTime.Now;
+        if (!string.IsNullOrEmpty(nextAvaiableCoolTimeStr))
+        {
+            nextItemDropHasCD = true;
+            nextAvaiableCoolTime = DateTime.Parse(nextAvaiableCoolTimeStr);
+        }
+        
+        //聊天记录缓存
+        var msgListCacheKey = string.Format("EXPERT_MESSAGELISTCACHEKEY");
+        var msgList = CacheHelper.GetCache(msgListCacheKey) as List<string> ?? new List<string>();
+        var userId = dataOp.GetCurrentUserId();
+    %>
+    <script src="<%=SysAppConfig.HostDomain %>/Scripts/Reference/jquery-1.7.2.min.js"
+        type="text/javascript"></script>
+
+ 
+    <link href="<%=SysAppConfig.HostDomain %>/Content/css/common/common.css" rel="stylesheet"
+        type="text/css" />
+    <link href="<%=SysAppConfig.HostDomain %>/Content/css/common/font-awesome.css" rel="stylesheet"
+        type="text/css" />
+    <link href="<%=SysAppConfig.HostDomain %>/Content/css/common/font-awesome-ie7.css"
+        rel="stylesheet" type="text/css" />
+    <link href="<%=SysAppConfig.HostDomain %><%=SysAppConfig.GlobalCss %>" rel="stylesheet"
+        type="text/css" />
+    <!-- 新文件服务器所需-->
+    <script type="text/javascript">
+        var New_Master_Server_Address = "<%=SysAppConfig.MasterServerAddress %>|<%=CusAppConfig.FileServerCustomerCode %>|<%=dataOp.GetCurrentUserId() %>";
+        var mttTypeRejectFilter = "<%=SysAppConfig.MttTypeRejectFilter %>"
+
+        var mttRejectTypes = '<%=SysAppConfig.MttTypeRejectFilter %>';
+        var masterAddress = '<%=SysAppConfig.MasterServerAddress %>';
+        var bizGuid = '<%=SysAppConfig.bizGuid %>';
+    </script>
+    <script type="text/javascript" src="<%=SysAppConfig.HostDomain %>/Scripts/signalr/json2.min.js"></script>
+    <script type="text/javascript" src="<%=SysAppConfig.HostDomain %>/Scripts/signalr/jquery.signalR-1.2.2.min.js"></script>
+    <script type="text/javascript" src="<%=SysAppConfig.HostDomain %>/Scripts/signalr/hubs.js"></script>
+    <script type="text/javascript" src="<%=SysAppConfig.HostDomain %>/Scripts/Reference/YHMaskInfo/maskInfo.js"></script>
+    <link href="<%=SysAppConfig.HostDomain %>/Scripts/Reference/YHMaskInfo/style.css"
+        rel="stylesheet" type="text/css" />
+    <%--    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js" ></script>--%>
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+     
+    <style type="text/css">
+    
+     .btn
+        {
+            width: 75px;
+            height: 25px;
+        }
+      .msgHighLigh{ 
+        -webkit-transition:border linear .2s,-webkit-box-shadow linear .5s; 
+        border-color:rgba(141,39,142,.75); 
+        -webkit-box-shadow:0 0 18px rgba(111,1,32,3); 
+        } 
+        .itemClass{
+        position: fixed;
+        bottom: 40px;
+        right:0px;
+        }
+
+</style>
+</head>
+<body>
+    <div id="InfoX" style="width: 200px; height: 15px; position: fixed; top: 40px; left: 40%;
+        background: #E0E0E0; margin: 0 auto; z-index: 9999; display: none">
+    </div>
+    <% 
+        var keyWord = Server.UrlDecode(PageReq.GetParam("keyWord"));
+        var oldKeyWord = Server.UrlDecode(PageReq.GetParam("oldKeyWord"));
+        var mindMapId = PageReq.GetFormList("mindMapId");
+        var isAdmin = new Authentication().IsAdmin;
+        var labelId = PageReq.GetParam("labelId");
+    
+    %>
+    <!--页面头部-->
+    <%
+        var searchType = PageReq.GetParam("searchType");
+        string indexUrl = SysAppConfig.IndexUrl;
+        Authentication auth = new Authentication(dataOp.GetCurrentUserId());
+    %>
+    <div id="pagetop">
+        <div class="title_box">
+            <a class="logo" href="/KnowledgeMindMap/Index"></a>
+            <div class="p-top_searchBox">
+                <input class="p-top_search p-j-doSearch" value="<%=keyWord %>" searchtype="<%=searchType %>" />
+                <a href="javascript:;" onclick="SearchMineMap()"><i class="icon-search p-search_icon"
+                    style="font-size: 16px; top: 24px; right: 90px;"></i></a>
+                <div class="p-hoverShow">
+                    <div class="p-search_select">
+                        <%if (searchType == "1")
+                          {%>文章<%}
+                          else
+                          { %>标签<%} %><i class="icon-angle-down ml5"></i></div>
+                    <div class="p-hoverShow-itm p-search_selCon">
+                        <ul class="p-j-toggleSearchType">
+                            <li searchtype="0"><a href="javascript:;">标签</a></li><!--onclick="SearchMineMap(0,this)" -->
+                            <li searchtype="1"><a href="javascript:;">文章</a></li><!--onclick="SearchMineMap(1,this)" -->
+                        </ul>
+                    </div>
+                  
+                </div>
+                
+            </div>
+            <div class="q_entry">
+                <div class="p-icon_entry">
+               
+
+                <a class="mr20 p-transpart" href="/KnowledgeMindMap/PersonalCenter" style="text-decoration: none;">
+                        <i class="p-icon_user mr5"></i>个人中心</a>
+                    <a class="mr20 p-transpart" href="/KnowledgeMindMap/MindMapFavoriateArticle" style="text-decoration: none;">
+                        <i class="p-icon_favoriate mr5"></i>我的收藏</a> <a class="mr20 p-transpart" href="javascript:;"
+                            onclick="QuickCreateMindMap()" style="text-decoration: none;"><i class="p-icon_chart mr5">
+                            </i>脉络图</a>
+                    <%
+                        var uploadUrl = "/KnowledgeMindMap/MindMapArticleNow";
+                        if (!string.IsNullOrEmpty(labelId))
+                        {
+                            uploadUrl = string.Format("{0}?labelId={1}", uploadUrl, labelId);
+                        }
+                    
+                    %>
+                    <a class="mr20 p-transpart" href="<%=uploadUrl %>"><i class="p-icon_upload mr5"></i>
+                        点击上传文章 </a><span class="p-transpart"><i class="p-icon_user mr5"></i>
+                            <%--<a href="/KnowledgeMindMap/PersonalCenter" style="text-decoration: none;">
+                            <%=dataOp.GetCurrentUserName() %>
+                        </a>--%>
+                            <a href="/KnowledgeMindMap/MindMapUpLoadArticle" style="text-decoration: none;">
+                                <%=dataOp.GetCurrentUserName() %>
+                            </a></span><a href="javascript:;" onclick="Logoff();" class="p-transpart"><i class="p-icon_off mr20 ml20">
+                            </i></a>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+    <div class="animated bounceIn p-j-redBag" style="display: none">
+        <%--红包未开启--%>
+        <div class="p-j-openBag">
+        </div>
+        <%--红包开启--%>
+        <div class="p-j-openedBag none">
+            <h1 id="txt_title">
+            </h1>
+            <div class="sumMoney">
+                <span class="fb" style="font-size: 20px;" id="txt_number"></span><span class="fb f20 ml10"
+                    style="" id="txt_unit"></span>
+            </div>
+            <a id="p-j-receive">点击领取</a>
+        </div>
+    </div>
+    
+             
+   <%if (pageCanDropItem == "1"  )
+     { %>              
+<div class="itemClass" style="width:130px">
+        <p>
+        <span><%if (isDropCompleted == "1"  )
+                { %>
+                   <img title="该页面无法再掉落道具" style=" width:30px ; height:30px "src="/../Content/images/client/InfoExpert/sword.gif" /><strong>已攻略</strong>
+                 <%} %></span> 
+                  <br/>
+         <img title="当前剩余可掉落的道具个数" style=" width:30px ; height:30px " src="/../Content/images/client/InfoExpert/box-01.png" />
+                 <span> 
+                 <strong>剩余次数：<%=avaiableDropTimes%>/<%=SysAppConfig.Mission_HellChallengeCount%></strong>
+                 <strong  id="cdTime"></strong> 
+                 </span>
+　　         
+           
+                
+        </p>
+   </div>
+   <%} %>
+
+     <!--在线聊天-->
+        <div class="p-j-guide "   id="element">
+            <div class="pr">
+                <div class="p-GuiOperation hide" id="msgBorder">
+                    在线聊天</div>
+                <div class="p-GuiContent">
+                    <h3 class="head">
+                        讨论组</h3>
+                    <div class="infoContent">
+                        <div id="userContainer" class="br">
+                            <ul id="userList">
+                            </ul>
+                        </div>
+                        <div class="messageContainer">
+                            <div id="messageboard" class="bb h320" style="overflow-y: auto;">
+                                <ul id="discussion">
+                                   <%
+                                       var itemIndex =1;
+                                       
+                                        foreach (var item in msgList)
+                                        {
+                                            var isLast = itemIndex++ >= msgList.Count;
+                                             
+                                            var spiltArray = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                                            if (spiltArray.Length < 3) continue;
+                                            var id = spiltArray[0];
+                                            var name = spiltArray[1]; //名字 时间
+                                            var message = spiltArray[2];
+                                            var url = "/KnowledgeMindMap/PersonalCenter?userId=" + id;
+                                            if (id ==userId.ToString()) //当前用户的信息右置
+                                            {
+                                    %>
+                                            <li class="clearfix">
+                                                <p class="fr mr5 mb5 c_666 f10">
+                                                    <a href="<%=url %>"><%=name %></a></p>
+                                            </li>
+                                            <li class="clearfix p-messageBox_self mb10" <%if(isLast){ %>id="msg_last"<%} %>>
+                                       
+                                                    <%=message %> 
+                                            </li>
+                                    <%     }
+                                            else
+                                            {
+                                    %>
+                                            <li class="clearfix">
+                                                <p class="fl ml5 mb5 c_666 f10">
+                                                   <a href="<%=url %>"><%=name %></a></p>
+                                            </li>
+                                            <li class="clearfix p-messageBox_others mb10" <%if(isLast){ %>id="msg_last"<%} %> >
+                                        
+                                                    <%=message %> 
+                                            </li>
+                                    <%      }
+                                        }
+                                    %>
+                                </ul>
+                            </div>
+                            <div id="messagecontainer">
+                              <%--  <textarea id="message" class="rte-zone" rows="1" cols="1"></textarea>--%>
+                               
+                                     <div class="c_bg_eee"> 
+                                        <script id="message" type="text/plain" style=" height:63px"></script>
+                                        <div class="bt sendBox">
+                                        <input type="button" id="send" class="btn" value="发送" />
+                                        <input type="button" id="close" class="btn" value="关闭" style="display: none" />
+                                        <input type="hidden" id="displayname" value="<%=dataOp.GetCurrentUserName() %>" />
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!--页面头部结束-->
+    <asp:ContentPlaceHolder ID="MainContent" runat="server">
+    </asp:ContentPlaceHolder>
+    <!--页面尾部-->
+    <div id="footer">
+        ©2012-2017 南京蒙正智库房地产信息咨询有限公司版权所有.ALL RIGHTS RESERVED
+    </div>
+    <!--页面尾部结束-->
+    <script language="javascript">
+
+        function dateDiff(date1, date2) {
+            var type1 = typeof date1, type2 = typeof date2;
+            if (type1 == 'string')
+                date1 = stringToTime(date1);
+            else if (date1.getTime)
+                date1 = date1.getTime();
+            if (type2 == 'string')
+                date2 = stringToTime(date2);
+            else if (date2.getTime)
+                date2 = date2.getTime();
+            return (date1 - date2) / 1000; //结果是秒 
+        }
+        function formatSeconds(value) {
+            var theTime = parseInt(value); // 秒
+            var theTime1 = 0; // 分
+            var theTime2 = 0; // 小时
+            if (theTime > 60) {
+                theTime1 = parseInt(theTime / 60);
+                theTime = parseInt(theTime % 60);
+                if (theTime1 > 60) {
+                    theTime2 = parseInt(theTime1 / 60);
+                    theTime1 = parseInt(theTime1 % 60);
+                }
+            }
+           return [zero(theTime2), zero(theTime1), zero(theTime)].join(":"); 
+        }
+        var zero = function (v) {
+            return (v >> 0) < 10 ? "0" + v : v;
+        }; 
+        //字符串转成Time(dateDiff)所需方法 
+        function stringToTime(string) {
+            var f = string.split(' ', 2);
+            var d = (f[0] ? f[0] : '').split('-', 3);
+            var t = (f[1] ? f[1] : '').split(':', 3);
+            return (new Date(
+            parseInt(d[0], 10) || null,
+            (parseInt(d[1], 10) || 1) - 1,
+            parseInt(d[2], 10) || null,
+            parseInt(t[0], 10) || null,
+            parseInt(t[1], 10) || null,
+            parseInt(t[2], 10) || null
+            )).getTime();
+
+        }
+
+        //调用 dateDiff("2009-10-10 19:00:00","2009-10-10 18:00:00")
+
+        function GetLatestTime()
+        {
+            var now = new Date();
+           
+            var nextTime = new Date("<%=nextAvaiableCoolTime %>");
+            //var nextTime = new Date("2017-04-25 16:11");
+            if (nextTime > now) {
+                var result = dateDiff(nextTime, now);
+               // console.log(result);
+               $("#cdTime").html(formatSeconds(result));
+            } else {
+               // console.log("close");
+               $("#cdTime").html("");
+                clearInterval();
+            }
+        }
+        <%if(nextItemDropHasCD) {%>
+        setInterval(GetLatestTime, 1000);
+        <%} %>
+
+        var isAdmin = "<%=isAdmin%>";
+        var isEditMindMap = isAdmin == "True" ? true : false;
+
+        $('.p-j-doSearch').on('keyup', function (event) {
+            var $this = $(this);
+            if (event.keyCode == "13") {
+                var keyWord = $this.val();
+                SearchMineMap("", keyWord);
+            }
+        });
+        function Logoff() {
+            window.location.href = "/Account/Logout";
+            // document.execCommand('ClearAuthenticationCache');
+            //window.close();
+        }
+        function SearchMineMap(obj, keyWord) {
+
+            var type = $(".p-j-doSearch").attr('searchType');
+
+            var keyWord = keyWord || $.trim($(obj).closest('.p-top_searchBox').find('.p-top_search').val());
+            if (!keyWord) {
+                keyWord = $(".p-top_search").val();
+            }
+            var jumpUrl = "/KnowledgeMindMap/MindMapSearch?keyWord=" + escape(keyWord) + "&oldKeyWord=" + escape("<%=keyWord %>");
+            if (type == "1") {
+                jumpUrl = "/KnowledgeMindMap/MindMapFileSearch?keyWord=" + escape(keyWord) + "&oldKeyWord=" + escape("<%=keyWord %>");
+            }
+            if (keyWord != "") {
+                window.location.href = jumpUrl + "&searchType=" + type;
+            }
+        }
+
+        function QuickCreateMindMap() {
+            window.location.href = "/KnowledgeMindMap/MindMapInfoList";
+        }
+
+        $('.p-j-toggleSearchType').on('click', 'li', function () {
+            var cur = $(this), type = cur.attr('searchType');
+            cur.closest('.p-hoverShow').find('.p-search_select')
+                    .html(cur.text() + '<i class="icon-angle-down ml5"></i>');
+            $('.p-j-doSearch').attr('searchtype', type);
+        });
+    </script>
+    
+    <script src="<%=SysAppConfig.HostDomain %>/signalr/hubs"></script>
+    <script>
+
+        $(function () {
+            //添加对自动生成的Hub的引用
+            var chat = $.connection.chatHub;
+
+            chat.client.getupdateMsg = function (username, message, dateTime) {
+
+                var url = "/KnowledgeMindMap/PersonalCenter?userName=" + escape(username);
+                $('#InfoX').html(username + " 获得了 " + message + "").slideDown(1000);
+                var h = "<li name='itemMsg'  >"
+                      + "<span class='mr5'><a href='" + url + "'>" + username + "</a></span>开启<i class='icon-redBag'></i>，获得"
+                      + "<span>" + message + "</span><i class='c_bbb'>" + dateTime + "</i></li>";
+                $(".contain_record").append(h);
+            };
+            //启动链接
+            $.connection.hub.start().done(function () {
+                //点击打开红包
+                $('.p-j-openBag').one('click', function () {
+                    var result = '<%= ViewContext.RouteData.Values["Item"] as String ?? "" %>';
+                    //  alert(result);
+                    //var obj = eval('(' + result + ')');
+                    var obj = JSON.parse(result);
+                    var message = obj.message;
+                    var itemList = obj.itemList;
+                    var $this = $(this);
+                    $('.p-j-redBag').removeClass('animated bounceIn');
+                    var itemNameHtml = "";
+                    for (var i = 0; i < itemList.length; i++) {
+                        var item = itemList[i];
+                        itemNameHtml += item.itemName + "X" + item.count;
+                        if (i < itemList.length - 1) {
+                            itemNameHtml += "</br>";
+                        }
+                        chat.server.updateMsg(item.userName, item.itemName + "X" + item.count, item.dateTime);
+                    }
+
+                    console.log(itemNameHtml);
+                    setTimeout(function () {
+                        $("#txt_title").html("道具");
+                        $("#txt_number").html(itemNameHtml);
+                        $("#txt_unit").html();
+                        //chat.server.updateMsg(obj.userName, obj.itemName, obj.dateTime, count);
+                        $this.hide();
+                        $('.p-j-openedBag').removeClass('none');
+                        $('.p-j-redBag').css({
+                            background: 'url(/../../Content/images/client/InfoExpert/luckyMoney2.png) no-repeat center bottom'
+                        });
+                    }, 1000);
+                });
+            });
+
+            function reflash() {
+                $('#InfoX').slideUp(1000);
+                setTimeout(reflash, 4000);
+            }
+            reflash();
+        });
+    </script>
+    <script type="text/javascript">
+
+        //显示红包
+        (function () {
+            if (<%=isDrop %> == "1") {    //有点机会掉落红包
+                $('.p-j-redBag').css('z-index', '1000').show();
+                $('body').mask();
+            }
+        })();
+
+        $('.p-j-openedBag').find('a#p-j-receive').click(function () {
+            $('body').unmask();
+            $('.p-j-redBag').css('z-index', '0').hide();
+        })
+    </script>
+
+    <script type="text/javascript">
+
+
+        function ShowLatestMessage() {
+            $('#messageboard').animate({ scrollTop: $('#discussion').height() }, 1000)
+        }
+        UE.delEditor('message');
+        var editor = UE.getEditor('message', { toolbars: [
+            ['emotion', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote']
+            ],
+
+            autoClearinitialContent: false,
+            wordCount: false,
+            elementPathEnabled: false
+        });
+        editor.ready(function () {
+            editor.focus(true);
+            $(document).scrollTop($(document).height());
+        });
+        $(function () {
+            ShowLatestMessage();
+
+            $('.p-j-guide').on('click', '.p-GuiOperation', function () {
+                var self = $(this), target = self.closest('.p-j-guide');
+                if (self.attr('state') == "show" || self.attr('state') == undefined) {
+                    self.attr('state', "hide");
+                    self.css("background", "#43A9E5");
+                    self.attr("class", "p-GuiOperation show");
+                    target.animate({ "right": 0 }, 1000);
+                } else {
+                    self.attr('state', "show");
+                    self.attr("class", "p-GuiOperation hide");
+                    target.animate({ "right": -target.width() + "px" }, 1000);
+                }
+            });
+
+            //初始化聊天框内容
+            //添加对自动生成的Hub的引用
+            var chat = $.connection.chatHub;
+
+            //调用Hub的callback回调方法
+
+            //后端SendChat调用后，产生的addNewMessageToPage回调
+            chat.client.addNewMessageToPage = function (id, name, message) {
+                var encodeName = htmlEncode(name);
+                var url = "/KnowledgeMindMap/PersonalCenter?userName=" + escape(encodeName);
+                var nameNode = "<a href=" + url + ">" + encodeName + "</a>";
+                if (id == "<%=userId %>") {
+                    $('#discussion').append('<li class="clearfix"><p class="fr mr5 c_666 f10">' + nameNode + '</p></li><li class="clearfix p-messageBox_self mb10">' + htmlEncode(message) + '</li>');
+                } else {
+                    $('#discussion').append('<li class="clearfix"><p class="fl ml5 c_666 f10">' + nameNode + '</p></li><li class="clearfix p-messageBox_others mb10">' + htmlEncode(message) + '</li>');
+                    //收到消息闪烁
+                    var $div = $('.p-GuiOperation');
+                    if ($div.hasClass('hide')) {
+                        //$div.css("background", "#FDE900");
+                        $div.attr("class", "p-GuiOperation msgHighLigh");
+                    }
+                }
+
+                ShowLatestMessage();
+            };
+
+            //后端SendLogin调用后，产生的loginUser回调
+            chat.client.loginUser = function (userlist) {
+                reloadUser(userlist);
+            };
+
+            //后端SendLogoff调用后，产生的logoffUser回调
+            chat.client.logoffUser = function (userlist) {
+                reloadUser(userlist);
+            };
+            //启动链接
+            $.connection.hub.start().done(function () {
+
+                var userid = guid;
+                $('#userGuid').val(userid);
+                var username = $('#displayname').val();
+
+//                //发送上线信息
+//                chat.server.sendLogin(userid, username);
+
+                //点击按钮，发送聊天内容
+                $('#send').click(function () {
+                    // var chatContent = $('#message').val();
+                    var chatContent = editor.getContent();
+                    chatContent = escape(chatContent);
+
+                    //var chatContent = $('#message').val();
+                    if (editor.hasContents()) {
+                        chat.server.sendChat(userid, username, chatContent);
+                        //$('#message').removeAttr("placeholder")
+                        editor.setContent("");
+                    } else {
+                        // $('#message').attr("placeholder", "消息不能为空！")
+                        editor.focus();
+                    }
+                });
+
+                //点击按钮，发送用户下线信息
+                $('#close').click(function () {
+                    chat.server.sendLogoff(userid, username);
+                    $("#send").css("display", "none");
+                });
+//                //每隔5秒，发送心跳包信息
+//                setInterval(function () {
+//                    chat.server.triggerHeartbeat(userid, username);
+//                }, 5000);
+            });
+
+
+        });
+
+        //重新加载用户列表
+        var reloadUser = function (userlist) {
+            $("#userList").children("li").remove();
+
+            for (i = 0; i < userlist.length; i++) {
+                $("#userList").append("<li><img src='' />" + userlist[i].Name + "</li>");
+            }
+        }
+
+        //div内容html化
+        var htmlEncode = function (value) {
+            var encodedValue = $('<div />').html(value).html();
+            return encodedValue;
+        }
+        //guid序号生成
+        //        var guid = (function () {
+        //            function s4() {
+        //                return Math.floor((1 + Math.random()) * 0x10000)
+        //                               .toString(16)
+        //                               .substring(1);
+        //            }
+        //            return function () {
+        //                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        //                           s4() + '-' + s4() + s4() + s4();
+        //            };
+        //        })();
+        var guid = "<%=userId %>";
+        editor.addListener("keydown", function (type, event) {
+            //判断是不是ctrl + enter
+            if (event.ctrlKey && 13 === event.keyCode) {
+                //获取纯文本
+                $("#send").click();
+
+            }
+        });
+       
+
+      
+    </script>
+</body>
+</html>

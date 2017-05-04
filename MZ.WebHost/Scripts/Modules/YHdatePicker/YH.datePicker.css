@@ -1,0 +1,52 @@
+.datetimepicker td, .datetimepicker th {
+  text-align: center;
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border: 0;
+}
+
+.datetimepicker table tr td span {
+  display: block;
+  width: 23%;
+  height: 54px;
+  line-height: 54px;
+  float: left;
+  margin: 1%;
+  cursor: pointer;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  cursor: pointer;
+}
+.datetimepicker{
+    border-radius: 4px;
+    direction: ltr;
+    margin-top: 1px;
+    padding: 4px;
+    border:1px solid #ddd;
+    background:#fff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+    z-index:1000;   
+}
+.switch{
+    cursor:pointer;
+}
+.datetimepicker table tr td span:hover {
+    background: #eee none repeat scroll 0 0;
+}
+.datetimepicker thead tr:first-child th:hover {
+    background: #eee none repeat scroll 0 0;
+}

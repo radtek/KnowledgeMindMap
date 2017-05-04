@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>新增产品系列</title>
+    
+    <link rel="stylesheet" href="../../Content/css/common/base.css" />
+    <link rel="stylesheet" href="../../Content/css/common/flowMap.css" />
+</head>
+
+    <style>
+		body,html,*{font-size:12px;	}
+	</style>
+    
+<body>
+	<button id="YH-FM-flowMapfullScreenBtn">全屏查看</button>
+	<div class="YH-FM-flowMapWrap" draggable="true" style="width:1035px; height: 800px">
+    	<div class="YH-FM-flowMapFullScreenClose"></div>
+    	<div id="YH-FM-flowMap">
+        	<table id="YH-FM-flowMapBgTable">
+
+
+                <colgroup>
+                    <col>
+                    <col>
+                    <col><col></colgroup>
+                <thead>
+                <tr>
+                    <th style="width: 10px; height: 10px;" class="theader-xy ui-resizable"></th>
+                    <th style="width: 109px;" class="theader-x ui-resizable">
+                        <div class="boxCon">
+                            <p>右键编辑</p></div></th>
+                    <th style="width: 118px;" class="theader-x ui-resizable">
+                        <div class="boxCon"><p>右键编辑</p></div></th><th style="width: 183px;" class="theader-x ui-resizable">
+                    <div class="boxCon"><p>右键编辑3</p></div></th></tr></thead>
+                <tbody>
+                <tr>
+                    <th style="height: 294px;" class="theader-y ui-resizable">
+                        <div class="boxCon">
+                            <p>右键编辑</p></div></th>
+                    <td></td>
+                    <td></td><td></td></tr>
+                </tbody>
+
+            </table>
+        	<div id="YH-FM-flowMapData">
+                <div id="YH-FM-flowMapLayer1">
+
+                    <div style="top: 80px; left: 134px; width: 70px; height: 30px;" class="YH-FM-bgItem" nodeid="0"></div><div style="top: 242px; left: 108px; width: 70px; height: 30px;" class="YH-FM-bgItem" nodeid="1"></div><div style="top: 52px; left: 370px; width: 70px; height: 30px;" class="YH-FM-bgItem" nodeid="2"></div><div style="top: 166px; left: 238px; width: 70px; height: 30px;" class="YH-FM-bgItem" nodeid="3"></div><div style="top: 219px; left: 450px; width: 70px; height: 30px;" class="YH-FM-bgItem" nodeid="4"></div><div style="top: 19px; left: 283px; width: 70px; height: 30px;" class="YH-FM-bgItem" nodeid="5"></div>
+
+                </div>
+                <div id="YH-FM-flowMapLayer2"></div>
+                <div id="YH-FM-flowMapLayer3">
+
+                    <div style="top: 80px; left: 134px; width: 70px; height: 30px;" class="YH-FM-box ui-resizable" nodeid="0"><div class="boxCon">右键编辑</div></div><div style="top: 242px; left: 108px; width: 70px; height: 30px;" class="YH-FM-box ui-resizable" nodeid="1"><div class="boxCon">右键编辑</div></div><div style="top: 52px; left: 370px; width: 70px; height: 30px;" class="YH-FM-box ui-resizable" nodeid="2"><div class="boxCon">右键编辑</div></div><div style="top: 166px; left: 238px; width: 70px; height: 30px;" class="YH-FM-box ui-resizable" nodeid="3"><div class="boxCon">右键编辑</div></div><div style="top: 219px; left: 450px; width: 70px; height: 30px;" class="YH-FM-box ui-resizable" nodeid="4"><div class="boxCon">右键编辑</div></div><div style="top: 19px; left: 283px; width: 70px; height: 30px;" class="YH-FM-box ui-resizable" nodeid="5"><div class="boxCon">右键编辑</div></div>
+
+                </div>
+        	</div>
+        </div>
+        <div id="YH-FM-flowMapBoxInfo">
+        	<h3>任务概要信息</h3>
+        	<dl>
+            </dl>
+        </div>
+    </div>
+   
+   
+
+<script type="text/javascript" src="../../Scripts/Reference/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/yinhoo.base.js"></script>
+<script type="text/javascript" src="../../Scripts/Reference/Common/raphael.js"></script>
+    <script type="text/javascript" src="../../Scripts/Reference/seaJS/sea.js"></script>
+<script type="text/javascript" src="./app/flowMapInitFlowMapView.js"></script>
+<script>
+
+    seajs.use('initFlowMapView', function (initFlowMapView) {
+        //var stateJson = {1:{flag:'flag1',isDeliver:'ture'},2:{flag:'flag2'},3:{flag:'flag3'},4:{flag:'flag2'},5:{flag:'flag3'},6:{flag:'flag2'}}
+        var str = '{"width":900,"height":600,"nodeId":6,"pStrokeWidth":"1.5","pStroke":"rgb(66, 66, 245)","lines":{"path_0_3":{"path":[["M",169,110],["V",182],["H",238]],"from":"0","to":3,"strokeDasharray":"-","lineType":1,"transform":[],"finalPath":[["M",169,110],["V",182],["H",238]]},"path_1_3":{"path":[["M",143,242],["V",182],["H",238]],"from":1,"to":3,"strokeDasharray":"","lineType":1,"transform":[],"finalPath":[["M",143,242],["V",182],["H",238]]},"path_3_2":{"path":[["M",273,166],["V",68],["H",370]],"from":3,"to":2,"strokeDasharray":"","lineType":1,"transform":[],"finalPath":[["M",273,166],["V",68],["H",316],["A",4,4,90,0,1,326,68],["H",370]]},"path_3_4":{"path":[["M",273,196],["V",235],["H",450]],"from":3,"to":4,"strokeDasharray":"","lineType":1,"transform":[],"finalPath":[["M",273,196],["V",235],["H",450]]},"path_4_5":{"path":[["M",485,219],["V",127],["H",321],["V",51],["H",319]],"from":4,"to":5,"strokeDasharray":"","lineType":1,"transform":[],"finalPath":[["M",485,219],["V",127],["H",321],["V",51],["H",319]]}}}';
+
+        setTimeout(function () {
+            initFlowMapView($.parseJSON(str));
+        }, 400)
+    })
+	
+$('#YH-FM-flowMap').on('click', '.YH-FM-box', function(e){
+	
+	var $node = $(this);
+	var dataName = ['耿兆兰','丁慧','张文婷','江恒','姚惠勇','贾敏','李书香','王培成','林治','彭晓倩'];
+	var ranNum = $(this).attr('nodeid');
+	var name = dataName[ranNum];
+	var data = {'title':$(this).attr('title'),'info':{'负责人':name,'状态':'已完成','完成时间':'2012-12-12', '交付物数量':ranNum}};
+	showInfo(data, $node)
+/*	$.post("test.php", {'id':$node.attr('id')},
+		function(data){
+			var data = {'title':'户型初步意向','info':{'负责人':'XXXXXX','状态':'已完成','完成时间':'2012-12-12','交付物数量':'3'}};
+			showInfo(data,$node)
+		}
+	);*/
+
+	return false;
+})
+
+	
+	
+	
+</script>
+</body>
+</html>

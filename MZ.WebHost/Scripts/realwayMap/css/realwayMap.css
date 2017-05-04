@@ -1,0 +1,153 @@
+/*
+//银禾脉络图编辑器
+//YH for yinhoo and FM for flowmap
+//author:zuizui
+//date:2014.8.1
+//email:huangzuizui@gmail.com
+*/
+#yh-rm-toolbar {
+    position: fixed;
+    top: 100px;
+    left: 0px;
+    background-color: #fff;
+    box-shadow:2px 2px 2px rgba(0,0,0,0.2);
+    z-index: 10;
+    padding: 10px 0;
+}
+#yh-rm-toolbar li{
+    padding: 5px 10px;
+    cursor: pointer;
+}
+#yh-rm-toolbar .iconfont{
+    color: #0e1f5b;
+}
+#yh-rm-toolbar li.active{
+    background-color: #0e1f5b;
+}
+#yh-rm-toolbar li.active .iconfont{
+    color: #ffffff;
+}
+
+#yh-rm-railwayMap{
+    position:relative;
+    background:#fff;
+    margin: 50px;
+    margin-top:50px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+}
+#yh-rm-bgImg{
+    cursor: crosshair;
+}
+
+
+#yh-rm-body {
+    background: #eee;
+    height: 100%;
+    overflow: hidden;
+}
+#yh-rm-box{
+    width:100%;
+    height:100%;
+    overflow:auto;
+    position:relative;
+    top:0px;
+    left:0px;
+}
+.yh-rm-iconBox-icon, .yh-rm-iconBox-text {
+    position: absolute;
+    padding: 4px;
+    overflow: hidden;
+    cursor: move;
+}
+.yh-rm-v-iconBox-icon, .yh-rm-v-iconBox-text {
+    position: absolute;
+    padding: 4px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.yh-rm-iconBox-icon.active{
+    color: #0b97c4;
+}
+.yh-rm-iconBox-text, .yh-rm-v-iconBox-text{
+    font-family: 微软雅黑;
+    font-size: 14px;
+}
+#yh-rm-menu {
+    position: absolute;
+    top: 100px;
+    left: 800px;
+    width: 240px;
+    background-color: #fff;
+    box-shadow:2px 2px 2px rgba(0,0,0,0.2);
+    border: 1px solid #cccccc;
+    padding: 5px;
+}
+#yh-rm-menu h3 {
+    background-color: #AAD4FF;
+    padding: 2px;
+    margin-bottom: 5px;
+}
+#yh-rm-menu-iconSize {
+    width: 50px;
+}
+#yh-rm-menu-iconColor {
+    width: 50px;
+}
+#yh-rm-menu-iconType li {
+    float: left;
+    color: #0e1f5b;
+    padding: 3px;
+}
+#yh-rm-menu-iconType li.active {
+    color: #0b97c4;
+}
+#yh-rm-bgImg {
+}
+.yh-rm-horizontalHandler {
+    width: 0;
+    height: 4000px;
+    border: 2px dotted #cccccc;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: ew-resize;
+}
+.yh-rm-verticalHandler {
+    height: 0;
+    width: 4000px;
+    border: 2px dotted #cccccc;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    cursor: ns-resize;
+}
+.yh-rm-resizeHandler {
+    height: 4px;
+    width: 4px;
+    background-color: #bbbbbb;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: nwse-resize;
+}
+#yh-rm-addMenu {
+    position: absolute;
+    width: 90px;
+    background-color: #fff;
+    box-shadow:2px 2px 2px rgba(0,0,0,0.2);
+    border: 1px solid #cccccc;
+    padding: 5px;
+}
+.yh-rm-btn {
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    padding: 3px 8px;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 12px;
+}
+.yh-rm-btn:hover {
+    background-color: #ff6600;
+    color: #ffffff;
+}

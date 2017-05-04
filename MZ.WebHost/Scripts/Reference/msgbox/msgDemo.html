@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="msgbox.css">
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="msgbox.min.js"></script>
+	<script type="text/javascript" src="mz.msgbox.js"></script>	
+	<style>
+		#test{
+			display:none;
+		}
+	</style>
+</head>
+<body>
+	<a href="javascript:;" onclick="clickme(1)">1</a>
+	<a href="javascript:;" onclick="clickme(4)">2</a>
+	<a href="javascript:;" onclick="clickme(5)">3</a>
+	<a href="javascript:;" onclick="clickme(6)">4</a>
+	<div id="test" style="width:100px;border:1px solid #ddd;">aaaa</div>
+	<a href="#" id="p-j-aa">show</a>
+	<script>
+		function clickme(i){
+			var tip = "";
+			switch(i){
+				case 1:
+					tip = "服务器繁忙，请稍后再试。";
+				break;
+				case 4:
+					tip = "设置成功！";
+				break;
+				case 5:
+					tip = "数据拉取失败";
+				break;
+				case 6:
+					tip = "正在加载中，请稍后...";
+				break;
+			}
+			MZ.msgbox.show(tip, i);
+		}
+
+		function setStyle(obj,json){
+			for(var i in json){
+		        obj.style[i]=json[i];
+		    }
+		}
+
+
+		$('#p-j-aa').on('click',function(){
+			$('#test').show();
+			console.log($('#test').is(':visible'))
+		});
+		var a = document.getElementsByTagName('a');
+		console.log(a[0])
+	</script>
+</body>
+</html>

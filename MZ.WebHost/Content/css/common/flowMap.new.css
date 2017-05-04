@@ -1,0 +1,238 @@
+
+
+/*
+//银禾脉络图编辑器
+//YH for yinhoo and FM for flowmap
+//author:zuizui
+//date:2014.8.1
+//email:huangzuizui@gmail.com
+*/
+#YH-FM-toolBar{position:fixed; top:0; left:0; background:#fff; height:25px; padding:5px; width:100%; box-shadow:2px 2px 2px rgba(0,0,0,0.2); z-index:100; border-bottom:1px solid #eee\0; *border-bottom:3px solid #eee}
+#YH-FM-toolBar #YH-FM-addBoxBtn{float:left; border:1px solid #f00; height:20px; width:100px;}
+#YH-FM-canvasHeight,#YH-FM-canvasWidth{width:40px;}
+
+#YH-FM-mindMap{position:relative; width:900px; height: 500px; background:#fff; margin:50px; margin-top: 80px; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);}
+
+#ZZ_map{position:relative; overflow:hidden; width:600px; height:400px; border:1px solid #f00;}
+#ZZ_map .ZZ_box{position:absolute; width:700px; height:800px;}
+#ZZ_map .ZZ_box .dot{position:absolute; width:10px; height:10px; background:#f00;}
+
+#YH-FM-boxDrop .YH-FM-box{position:absolute; width:70px; height:30px; }
+#YH-FM-boxDrop .YH-FM-box .boxCon{margin:5px; text-align:center;}
+#YH-FM-boxDrop .YH-FM-box .boxCon p{ text-align:center;}
+#YH-FM-canvas,#YH-FM-lineLayer,#YH-FM-bgBox{position:absolute; top:0px; left:0px; width:100%}
+#YH-FM-bgBox .YH-FM-bgItem{position:absolute; width:70px; height:30px; border:1px solid #ccc; background:#fff;}
+
+#YH-FM-editor{
+	border:1px solid #ddd;
+	border-bottom:none;
+	overflow:hidden;
+}
+.YH-FM-menuCenterBtns{
+	text-align:center;
+	padding:10px;
+	border:1px solid #ddd;
+	border-top:none;
+}
+#YH-FM-mapMenu .edui-default .edui-editor{
+	border:none;
+}
+.YH-FM-btn{
+	border:1px solid #ddd;
+	padding:0.2em 0.4em;
+	cursor:pointer;
+	vertical-align:middle;
+	height:24px;
+}
+.YH-FM-btn:hover,.YH-FM-highlight{
+	background:#f60;
+	border:1px solid #f30;
+	color:#fff;
+}
+#YH-FM-body input[type="checkbox"]{
+	vertical-align:middle;
+}
+#YH-FM-newMenu,#YH-FM-pathMenu{
+	width:60px;
+	padding:5px;
+	border:1px solid #ddd;
+	box-shadow:2px 2px 2px rgba(0,0,0,0.2);
+	position:absolute;
+	display:none;
+	background:#fff;
+}
+.YH-FM-box .flag1,.YH-FM-box .flag2,.YH-FM-box .flag3,.YH-FM-box .flag4{height:7px; width:7px; overflow:hidden; position:absolute; bottom:0px; right:0px;}
+.YH-FM-box .flag1{background:url(../../images/common/flowMap/flag_01.png) no-repeat;}
+.YH-FM-box .flag2{background:url(../../images/common/flowMap/flag_02.png) no-repeat;}
+.YH-FM-box .flag3{background:url(../../images/common/flowMap/flag_03.png) no-repeat;}
+.YH-FM-box .flag4{background:url(../../images/common/flowMap/flag_04.png) no-repeat; right:10px;}
+#YH-FM-mapMenu{width:350px; min-height:35px; display:none; position:absolute; background:#fff; z-index:1000; box-shadow:2px 2px 2px rgba(0,0,0,0.1)}
+.YH-FM-fromCursor{
+	cursor:url(../../images/common/flowMap/from.ico),auto;
+}
+.YH-FM-toCursor{
+	cursor:url(../../images/common/flowMap/to.ico),auto;
+}
+
+.YH-FM-box .YH-FM-forTableBtns,.YH-FM-box .YH-FM-forTableBtns .YH-FM-colorSelector,.YH-FM-col .YH-FM-forBoxBtns,.YH-FM-row .YH-FM-forBoxBtns{display:none;}
+.YH-FM-col #YH-FM-delTableBox,.YH-FM-col #YH-FM-copyBox,.YH-FM-row #YH-FM-delTableBox,.YH-FM-row #YH-FM-copyBox{display:none}
+.YH-FM-col #YH-FM-delTableRow,.YH-FM-col #YH-FM-addTableRow,.YH-FM-col #YH-FM-rowBackground,.YH-FM-col #YH-FM-rowBorderColor{display:none}
+.YH-FM-row #YH-FM-delTableCol,.YH-FM-row #YH-FM-addTableCol,.YH-FM-row #YH-FM-colBackground,.YH-FM-row #YH-FM-colBorderColor{display:none}
+
+#YH-FM-textForBox{ width:285px; height:60px;}
+.YH-FM-table{ border-collapse:separate; border-spacing:5px;}
+.YH-FM-table tr td{ border:1px solid #bbb; margin:5px; position:relative;}
+
+.YH-FM-fromCursor #YH-FM-bgBox .YH-FM-cur{
+	background:#f0d01f;
+}
+.YH-FM-toCursor #YH-FM-bgBox .YH-FM-cur{
+	background:#87e4ed;
+}
+#YH-FM-saveCanvas{
+	margin-right:20px;
+}
+#YH-FM-bgTable{
+	border:1px solid #bbb;
+}
+#YH-FM-bgTable .boxCon,#YH-FM-bgTable .boxCon p{
+	text-align:center;
+}
+#YH-FM-bgTable th,#YH-FM-bgTable td{
+	border:1px solid #bbb;
+	text-align:center;
+	vertical-align:middle;
+	padding:6px;
+}
+.YH-FM-borderTable th,.YH-FM-borderTable td{
+	border:1px solid #ddd;
+	vertical-align:middle;
+	padding:10px;
+	border-collapse:collapse;
+}
+
+.YH-FM-colorSelector {
+	display:inline-block;
+	width: 20px;
+	height: 20px;
+	background: url(../../images/common/flowMap/select2.png) no-repeat;
+	position:relative;
+	vertical-align:middle;
+}
+.YH-FM-colorSelector i{
+	display:block;
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 15px;
+	height: 15px;
+	background: url(../../images/common/flowMap/select2.png) center;
+}
+#YH-FM-pop{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	background: url("../../images/common/zz/opBlack_6.png") repeat;
+    height: 100%;
+	z-index:11000;
+	overflow:hidden;
+}
+#YH-FM-popMap-saveBtn {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	height: 60px;
+	overflow: visible;
+	text-align: center;
+}
+#YH-FM-saveCanvas {
+	width: 80px;
+	height: 40px;
+}
+.YH-FM-flowMapFullScreen .YH-FM-flowMapFullScreenClose,#YH-FM-pop-close {
+    background: url("../../images/common/flowMap/appbar.close.png") repeat;
+    cursor: pointer;
+    height: 76px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 76px;
+	z-index:1000;
+}
+#YH-FM-popMap{
+	position:absolute;
+	margin:50px;
+	background: #fff;
+}
+.YH-FM-flowMapWrap{overflow:hidden; position:relative; background:#fff; border:1px solid #bbb;}
+.YH-FM-flowMapFullScreen{
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	background: url("../../images/common/zz/opBlack_6.png") repeat;
+    height: 100%;
+	z-index:11000;
+	overflow:hidden;
+}
+#YH-FM-body{
+	width:100%;
+	height:100%;
+	overflow:auto;
+	position:relative;
+	top:0px;
+	left:0px;
+}
+.YH-FM-flowMapWrap #YH-FM-flowMap{background:#fff;}
+#YH-FM-flowMap .YH-FM-box{ cursor:pointer }
+
+
+#YH-FM-flowMapData,#YH-FM-flowMapLayer1,#YH-FM-flowMapLayer2,#YH-FM-flowMapLayer3{ position:absolute}
+
+#YH-FM-flowMapBgTable{
+	border:1px solid #bbb;
+}
+#YH-FM-flowMapBgTable .boxCon{
+	text-align:center;
+	font-weight:normal;
+}
+#YH-FM-flowMapBgTable th,#YH-FM-flowMapBgTable td{
+	border:1px solid #bbb;
+	text-align:center;
+	vertical-align:middle;
+	padding:6px;
+}
+#YH-FM-flowMapLayer3 .YH-FM-box{position:absolute; width:70px; height:30px; }
+#YH-FM-flowMapLayer3 .YH-FM-box .boxCon{margin:5px; text-align:center;}
+#YH-FM-flowMapLayer3 .YH-FM-box .boxCon p{ text-align:center;}
+#YH-FM-flowMapLayer1 .YH-FM-bgItem{position:absolute; width:70px; height:30px; border:1px solid #ccc; background:#fff;}
+
+/*展示页右键弹框样式*/
+#YH-FM-flowMapBoxInfo{width:200px; min-height:35px; display:none; position:absolute; background:#fff; z-index:1000; border:1px solid #eee; box-shadow:2px 2px 2px rgba(0,0,0,0.1)}
+#YH-FM-flowMapBoxInfo h3{
+	background:#f60;
+	color:#fff;
+	font-size:12px;
+	padding:3px;
+}
+#YH-FM-flowMapBoxInfo dl{
+	padding:3px;
+	line-height:20px;
+}
+#YH-FM-flowMapBoxInfo dl dt{
+	border-bottom:1px solid #eee;
+}
+#YH-FM-flowMapBoxInfo dl dd span{
+	color:#999;
+}
+
+.YH-FM-mask {
+	border: 1px dotted #0e90d2;
+	background: rgba(11, 11, 123, 0.3);
+	position: absolute;
+}
+.YH-FM-selectedNode {
+	border: 1px dashed #ff6600;
+	cursor: move;
+}

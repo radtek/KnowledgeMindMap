@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+<table width="600" class="dataTable">
+    <colgroup>
+        <col width="100">
+        <col width="100">
+        <col width="100">
+        <col width="100">
+        <col width="100">
+        <col width="100">
+        <col width="100">
+    </colgroup>
+    <tbody>
+    <tr>
+        <th>add</th>
+        <td>
+            <input type="text" mathid="a">
+        </td>
+        <td>
+            <input type="text" mathid="b">
+        </td>
+        <td mathfn="add(a, b)">xx</td>
+        <td>ff</td>
+        <td>ff</td>
+        <td>ff</td>
+    </tr>
+    <tr>
+        <th>add more</th>
+        <td>
+            <input type="text" mathid="d">
+        </td>
+        <td>
+            <input type="text" mathid="e">
+        </td>
+        <td>
+            <input type="text" mathid="f">
+        </td>
+        <td>
+            <div mathid="g">12</div>
+        </td>
+        <td mathfn="add(d, e, f, g)">xx</td>
+    </tr>
+    <tr>
+        <th>关联</th>
+        <td>
+            <input type="text" mathid="h" value="2">
+        </td>
+        <td>
+            <input type="text" mathid="j" value="4">
+        </td>
+        <td>
+            <div mathid="k" mathfn="add(h, j)">xx</div>
+        </td>
+        <td>and</td>
+        <td>
+            <input type="text" mathid="l" value="3">
+        </td>
+        <td>
+            <div mathfn="add(k, l)"></div>
+        </td>
+    </tr>
+    <tr>
+        <th>减法</th>
+        <td>
+            <input type="text" mathid="z" value="10">
+        </td>
+        <td> - </td>
+        <td>
+            <input type="text" mathid="x" value="3">
+        </td>
+        <td>
+            <input type="text" mathid="c" value="2">
+        </td>
+        <td>
+            <div mathfn="minus(z, x, c)"></div>
+        </td>
+    </tr>
+    <tr>
+        <th>乘法</th>
+        <td>
+            <input type="text" mathid="v" value="5">
+        </td>
+        <td>
+            <input type="text" mathid="n" value="4">
+        </td>
+        <td>ff</td>
+        <td>ff</td>
+        <td >
+            <div mathfn="multiplication(v, n)">xx</div>
+        </td>
+    </tr>
+    <tr>
+        <th colspan="3">乘法:精确到小数点位数"fixed"</th>
+        <td>
+            <input type="text" mathid="v" value="5.123">
+        </td>
+        <td>
+            <input type="text" mathid="n" value="4.123123">
+        </td>
+        <td >
+            <div mathfn="multiplication(v, n)" fixed="4">xx</div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+
+
+<script src="../jquery.yh.mathTable.js"></script>
+<script>
+    var Fn = {
+        add: function () {
+            var res = 0, i = 0, len = arguments.length;
+            for (; i < len; i++ ) {
+                res += arguments[i];
+            }
+            return res;
+        },
+        minus: function () {
+            // 第一个参数进去之后所有参数的值
+            var res = arguments[0], i = 1, len = arguments.length;
+            for (; i < len; i++ ) {
+                res -= arguments[i];
+            }
+            return res;
+        },
+        multiplication: function () {
+            var res = 1, i = 0, len = arguments.length;
+            for (; i < len; i++ ) {
+                res *= arguments[i];
+            }
+            return res;
+        }
+    }
+
+    $('.dataTable').YHmathTable(Fn);
+</script>
+</html>

@@ -1,0 +1,239 @@
+		.YH-MM-box{ position:relative; font-family: 微软雅黑,"Microsoft YaHei";}
+		.YH-MM-box h3{ font-weight:normal; font-size:12px; text-align:center; border:1px solid #fff}
+ 
+        .YH-MM-box .YH-MM-node {
+            display:table;
+            +position:relative;
+            overflow:hidden;
+        }
+        .YH-MM-box .YH-MM-node dt{
+			padding:10px;
+            vertical-align:middle;
+            display:table-cell;
+            +position:absolute;
+            +top:50%;
+        }
+		.YH-MM-box .YH-MM-node dd{
+			margin:10px;
+			*zoom: 1;
+		}
+		.YH-MM-box .YH-MM-node dd:after,.YH-MM-box .YH-MM-node dd:before{display:table;content:"";}
+		.YH-MM-box .YH-MM-node dd:after {clear: both;}
+
+		.YH-MM-node-con{
+			position:relative;
+		}
+		.YH-MM-node-con a{
+			max-width:90px;
+		}
+        .YH-MM-box .YH-MM-node dt .YH-MM-node-con{
+		    border-bottom:1px solid #73a1bf;
+            +position:relative;
+            +top:-50%;
+        }
+		.YH-MM-box .YH-MM-node dt .YH-MM-lv1{
+			border:none;
+		}
+        .YH-MM-box .YH-MM-node dt .YH-MM-node-con a{
+			line-height:20px;
+			padding:5px;
+        }
+        
+        .YH-MM-box .YH-MM-box-rightBranch .YH-MM-node dt .YH-MM-node-con a
+        {
+			padding-right:10px;
+        }
+        .YH-MM-box .YH-MM-box-leftBranch .YH-MM-node dt .YH-MM-node-con a
+        {
+			padding-right:10px;
+        }/*-解决连线和上角标重叠-1*/
+        .YH-MM-box .YH-MM-node dt .YH-MM-lv1 h3{
+			padding:5px 10px;
+			background:#eef3f6;
+			border:1px solid #73a1bf;
+			border-radius:5px;
+        }
+        .YH-MM-box .YH-MM-node dt h4{
+			font-size:10px;
+			font-weight:normal;
+        }
+		.YH-MM-box-leftBranch .YH-MM-node{
+			float:right;
+			clear:right;
+		}
+		.YH-MM-box-mainNode{
+			position:absolute;
+		}
+		.YH-MM-box-mainNode a{
+			background:#73a1bf;
+			color:#fff;
+			border-radius:10px;
+			padding:10px 20px;
+			font-size:20px;
+		}
+		#YH-MM-J-box_Wrap{
+			 background-color: #ffffff;
+    		border: 1px solid #dbdada;
+			padding-bottom:20px;
+		}
+		.YH-MM-intro{
+			padding:5px;
+		}
+		.mmFlag{
+			display:inline-block;
+			vertical-align:central;
+			width:24px;
+			height:27px;
+			background:url(/Content/images/client/JH/flag_03.png);
+		}
+		.YH-MM-lv1 .main{
+			position:absolute;
+			right:0;
+			top:0px;
+			width:24px;
+			height:27px;
+			background:url(/Content/images/client/JH/flag_03.png);
+		}
+		.YH-MM-lv2 .main,.YH-MM-lv3 .main{
+			position:absolute;
+			right:0;
+			top:-5px;
+			width:19px;
+			height:21px;
+			background:url(/Content/images/client/JH/flag_01.png);
+		}
+		
+		
+#p-j-mindMapNodeInfo {
+	position: absolute;
+	width: 490px;
+	background: #fff;
+	z-index: 1000;
+	border: 1px solid #949494;
+	min-height:80px;
+}
+.mapNodeInfo{
+	padding: 10px;
+	max-height:500px;
+	overflow:auto;
+	overflow-x:hidden;
+}
+#p-j-mindMapNodeInfo h3 {
+	font-size: 16px;
+}
+#p-j-mindMapNodeInfo th {
+	color: #967c5b;
+}
+#p-j-mindMapNodeInfo table th, #p-j-mindMapNodeInfo table td {
+	padding: 2px 5px;
+}
+.p-j-mindMapNodeInfo-arrow {
+	position: absolute;
+}
+.p-j-mindMapNodeInfo_R .p-j-mindMapNodeInfo-arrow {
+	background: url(images/mindMapArrowL.png) no-repeat;
+	width: 27px;
+	height: 39px;
+	top: 50px;
+	left: -27px;
+}
+.p-j-mindMapNodeInfo_L .p-j-mindMapNodeInfo-arrow {
+	background: url(images/mindMapArrowR.png) no-repeat;
+	width: 27px;
+	height: 39px;
+	top: 50px;
+	right: -27px;
+}
+#YH-FM-flowMapBgTable th, #YH-FM-flowMapBgTable td {
+	border: none;
+}
+
+.YH-MM-J-dropable .YH-MM-J-dropArea{
+	border-radius: 3px;
+    bottom: 0;
+    height: 6px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    border: 1px dashed #a6916a;
+}
+.YH-MM-J-dropable .YH-MM-J-dropArea:hover{
+	background:#ccc;
+}
+.YH-MM-J-dropable .YH-MM-node{
+	position:relative;
+}
+.YH-MM-node .YH-MM-node-con.unUse h3{
+	text-decoration:line-through;
+	font-weight:bold;
+	color:#000;
+}
+.YH-MM-node .YH-MM-node-con.unUse h3 a{
+	font-weight:normal;
+	color:#999;
+}
+.YH-MM-node .YH-MM-node-con sup{
+	position: absolute;
+	top: -5px;
+	right: -10px;
+}
+/*.YH-MM-box-rightBranch .YH-MM-node .YH-MM-node-con sup{
+	right: -5px;
+}-解决连线和上角标重叠-*/
+.YH-MM-box-leftBranch .YH-MM-node .YH-MM-node-con sup{
+	right: -5px;
+}/*-解决连线和上角标重叠-*/
+.YH-MM-node .YH-MM-node-con.YH-MM-lv1 sup{
+	position: absolute;
+	top: -2px;
+	right: 0;
+}
+.YH-MM-J-dropable .YH-MM-node.YH-MM-J-targetBlock>dt .YH-MM-node-con h3,.YH-MM-J-dropable .YH-MM-box-mainNode a{
+    border: 1px dashed #a6916a;
+	border-radius: 3px;
+	
+}
+.YH-MM-J-dropable .YH-MM-node.YH-MM-J-targetBlock dt .YH-MM-node-con h3:hover,.YH-MM-J-dropable .YH-MM-box-mainNode a:hover{
+	background:#ccc;
+}
+
+.red{
+	color:#f00;
+}
+#YH-MM-J-menu,.p-j-moveType{
+	position:absolute;
+	width:120px;
+	background:#fff;
+	border:1px solid #ddd;
+	box-shadow:3px 3px 3px rgba(0,0,0,0.3);
+	z-index:100;
+}
+#YH-MM-J-menu ul li,.p-j-moveType ul li{
+	padding:5px 5px 5px 15px;
+	border-bottom:1px solid #ddd;
+	cursor:pointer;
+	border-radius:5px;
+}
+#YH-MM-J-menu ul li:last-child,.p-j-moveType ul li:last-child{
+	border-bottom:none;
+}
+#YH-MM-J-menu ul li:hover,.p-j-moveType ul li:hover{
+	background:#efefef;
+}
+#p-j-moveBlock{
+	position:absolute;
+	background:#fff;
+	padding:5px;
+	border:1px solid #73a1bf;
+}
+#p-j-itemList.YH-MM-J-dropable {
+	cursor: url('images/draging.ico'), auto;
+}
+#p-j-itemList.YH-MM-J-dropable .YH-MM-node-con h3 a{
+	cursor: url('images/undropable.ico'), no-drop;
+}
+#p-j-itemList.YH-MM-J-dropable .YH-MM-J-targetBlock>dt>.YH-MM-node-con h3 a,
+#p-j-itemList.YH-MM-J-dropable .YH-MM-box-mainNode a,
+#p-j-itemList.YH-MM-J-dropable .YH-MM-J-dropArea{
+	cursor: url('images/dropable.ico'), pointer;
+}

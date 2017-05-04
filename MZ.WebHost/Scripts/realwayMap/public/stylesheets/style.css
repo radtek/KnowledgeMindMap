@@ -1,0 +1,44 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.icons-sprite, .icon-note {
+  background-image: url('../../src/images/icons-s258f2e9343.png');
+  background-repeat: no-repeat;
+}
+
+a {
+  color: #ffdddd;
+}
+
+#p-header {
+  padding: 20px;
+}
+
+#p-nav {
+  padding: 5px;
+  height: 40px;
+  border-top: 1px solid #0b97c4;
+  border-bottom: 1px solid #0b97c4;
+}
+
+#p-nav ul li {
+  float: left;
+  margin-left: 20px;
+  padding: 0;
+}
+
+#p-footer {
+  clear: left;
+  border-top: 1px solid #0b97c4;
+  margin: 20px;
+}
+
+.icon-note {
+  background-position: 0 -64px;
+  height: 64px;
+  width: 64px;
+}
+
+/*# sourceMappingURL=style.css.map */

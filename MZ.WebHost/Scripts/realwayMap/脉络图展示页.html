@@ -1,0 +1,44 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>新增产品系列</title>
+    <link rel="stylesheet" href="http://localhost:8030/Content/css/common/base.css"/>
+    <link rel="stylesheet" href="css/realwayMap.css"/>
+    <link rel="stylesheet" href="css/iconfont/iconfont.css"/>
+</head>
+
+<body>
+<div class="pr" id="yh-rm-view">
+    <img src="images/项目计划-YH-三盛地铁图.jpg" alt="">
+</div>
+<script type="text/javascript" src="http://localhost:8030/Scripts/Reference/jquery-1.7.2.min.js"></script>
+<script>
+    ;(function () {
+        var dotTypes = {
+            0: 'icon-circle',
+            1: 'icon-square',
+            2: 'icon-rectangle',
+            3: 'icon-diamond',
+        };
+
+        $.get('http://192.168.1.19:8000/data/railwayMapData.json').then(function (nodes) {
+            var i = 0, len = nodes.length;
+            var html = '<div id="yh-rm-overlay">';
+            for (;i < len; i++) {
+                var node = nodes[i];
+                html += '<div>';
+                if (node.dot) {
+                    html += '<div class="yh-rm-v-iconBox-icon active" style="top: ' + node.dot.Y + 'px; left: ' + node.dot.X + 'px;"><i class="iconfont ' + dotTypes[node.dot.type] + '" style="font-size: ' + node.dot.size + 'px;"></i></div>';
+                }
+                html += '<div class="yh-rm-v-iconBox-text" style="top: ' + node.intro.Y + 'px; left: ' + node.intro.X + 'px; width: ' + node.intro.width + 'px; height: ' + node.intro.height + 'px;"><div>' + node.intro.text + '</div></div>';
+                html += '</div>';
+            }
+            html += '</div>';
+            console.log(html);
+            $('#yh-rm-view').append(html);
+        })
+    })();
+</script>
+</body>
+</html>
