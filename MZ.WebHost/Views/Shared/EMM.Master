@@ -15,6 +15,7 @@
         var avaiableDropTimes = ViewContext.RouteData.Values["avaiableDropTimes"] as String ?? "0"; //是否掉落次数为0
         var nextAvaiableCoolTimeStr = ViewContext.RouteData.Values["nextAvaiableCoolTime"] as String ?? ""; //是否掉落次数为0
         var pageCanDropItem = ViewContext.RouteData.Values["pageCanDropItem"] as String ?? ""; //页面是否可掉落道具
+        var  urlHashCode=ViewContext.RouteData.Values["urlHashCode"] as String ?? ""; //页面唯一值
         var nextItemDropHasCD = false;
         var nextAvaiableCoolTime = DateTime.Now;
         if (!string.IsNullOrEmpty(nextAvaiableCoolTimeStr))
@@ -122,7 +123,9 @@
             <div class="q_entry">
                 <div class="p-icon_entry">
                
-
+               <a class="mr20 p-transpart"  href="/KnowledgeMindMap/MindMapRank" 
+                              style="text-decoration: none;"><i class="p-icon_chart mr5">
+                            </i>排行榜</a>
                 <a class="mr20 p-transpart" href="/KnowledgeMindMap/PersonalCenter" style="text-decoration: none;">
                         <i class="p-icon_user mr5"></i>个人中心</a>
                     <a class="mr20 p-transpart" href="/KnowledgeMindMap/MindMapFavoriateArticle" style="text-decoration: none;">
@@ -154,8 +157,10 @@
     </div>
     <div class="animated bounceIn p-j-redBag" style="display: none">
         <%--红包未开启--%>
+        <a href="javascript:;" onclick="OpenBag()">
         <div class="p-j-openBag">
         </div>
+        </a>
         <%--红包开启--%>
         <div class="p-j-openedBag none">
             <h1 id="txt_title">
@@ -164,7 +169,7 @@
                 <span class="fb" style="font-size: 20px;" id="txt_number"></span><span class="fb f20 ml10"
                     style="" id="txt_unit"></span>
             </div>
-            <a id="p-j-receive">点击领取</a>
+            <a id="p-j-receive" >点击领取</a>
         </div>
     </div>
     
@@ -178,12 +183,23 @@
                    <img title="该页面无法再掉落道具" style=" width:30px ; height:30px "src="/../Content/images/client/InfoExpert/sword.gif" /><strong>已攻略</strong>
                  <%} %></span> 
                   <br/>
-         <img title="当前剩余可掉落的道具个数" style=" width:30px ; height:30px " src="/../Content/images/client/InfoExpert/box-01.png" />
+                  <%
+                      
+         var dropItemUrl = string.Format("{0}/KnowledgeMindMap/OpenItem?urlHashCode={1}&t={2}",SysAppConfig.HostDomain, urlHashCode, DateTime.Now.ToString("yyyyMMddHHmmss"));
+         dropItemUrl=PageReq.UrlGenerateSign(dropItemUrl);
+         if (isDropCompleted != "1")
+         { %>
+         <div >
+        <%-- onclick="OpenItem(this)"--%>
+         <a id="boxLink"   <%if(nextItemDropHasCD ){%>style=" display:none"<%} %> href="javascript:;" url=<%=dropItemUrl %> >
+         <img   title="当前剩余可掉落的道具个数" style=" width:30px ; height:30px " src="/../Content/images/client/InfoExpert/box-01.png" />
+         </a>
+         <%} %>
                  <span> 
-                 <strong>剩余次数：<%=avaiableDropTimes%>/<%=SysAppConfig.Mission_HellChallengeCount%></strong>
+                 <strong>剩余次数：<span id="avaiableDropTimesSpan"><%=avaiableDropTimes%></span>/<%=SysAppConfig.Mission_HellChallengeCount%></strong>
                  <strong  id="cdTime"></strong> 
                  </span>
-　　         
+　　      </div>   
            
                 
         </p>
@@ -320,25 +336,29 @@
         }
 
         //调用 dateDiff("2009-10-10 19:00:00","2009-10-10 18:00:00")
-
+        var nextAvaiableCoolTime="<%=nextAvaiableCoolTime %>";
         function GetLatestTime()
         {
+          
             var now = new Date();
            
-            var nextTime = new Date("<%=nextAvaiableCoolTime %>");
-            //var nextTime = new Date("2017-04-25 16:11");
-            if (nextTime > now) {
+            var nextTime = new Date(nextAvaiableCoolTime);
+           //  var nextTime = new Date("2017-04-25 16:11");
+           
+            if (nextTime >= now) {
                 var result = dateDiff(nextTime, now);
-               // console.log(result);
+              //  console.log(result);
                $("#cdTime").html(formatSeconds(result));
             } else {
-               // console.log("close");
+              // console.log("close");
+              $("#boxLink").show();
                $("#cdTime").html("");
                 clearInterval();
             }
         }
+
         <%if(nextItemDropHasCD) {%>
-        setInterval(GetLatestTime, 1000);
+         setInterval(GetLatestTime, 1000);
         <%} %>
 
         var isAdmin = "<%=isAdmin%>";
@@ -387,10 +407,46 @@
     
     <script src="<%=SysAppConfig.HostDomain %>/signalr/hubs"></script>
     <script>
+        var itemMsgResult = '<%= ViewContext.RouteData.Values["Item"] as String ?? "" %>';
+
+        var chat = $.connection.chatHub;
+        function OpenBag() {
+           // $("#boxLink").hide();
+            //  alert(result);
+            //var obj = eval('(' + result + ')');
+            //console.log(itemMsgResult);
+            var obj = JSON.parse(itemMsgResult);
+            var message = obj.message;
+            var itemList = obj.itemList;
+            var $this = $(this);
+            $('.p-j-redBag').removeClass('animated bounceIn');
+            var itemNameHtml = "";
+            for (var i = 0; i < itemList.length; i++) {
+                var item = itemList[i];
+                itemNameHtml += item.itemName + "X" + item.count;
+                if (i < itemList.length - 1) {
+                    itemNameHtml += "</br>";
+                }
+                chat.server.updateMsg(item.userName, item.itemName + "X" + item.count, item.dateTime);
+            }
+
+            //console.log(itemNameHtml);
+            setTimeout(function () {
+                $("#txt_title").html("道具");
+                $("#txt_number").html(itemNameHtml);
+                $("#txt_unit").html();
+                //chat.server.updateMsg(obj.userName, obj.itemName, obj.dateTime, count);
+                $this.hide();
+                $('.p-j-openedBag').removeClass('none');
+                $('.p-j-redBag').css({
+                    background: 'url(/../../Content/images/client/InfoExpert/luckyMoney2.png) no-repeat center bottom'
+                });
+            }, 1000);
+        }
 
         $(function () {
             //添加对自动生成的Hub的引用
-            var chat = $.connection.chatHub;
+           
 
             chat.client.getupdateMsg = function (username, message, dateTime) {
 
@@ -401,41 +457,15 @@
                       + "<span>" + message + "</span><i class='c_bbb'>" + dateTime + "</i></li>";
                 $(".contain_record").append(h);
             };
+
+          
+
+           
+
             //启动链接
             $.connection.hub.start().done(function () {
                 //点击打开红包
-                $('.p-j-openBag').one('click', function () {
-                    var result = '<%= ViewContext.RouteData.Values["Item"] as String ?? "" %>';
-                    //  alert(result);
-                    //var obj = eval('(' + result + ')');
-                    var obj = JSON.parse(result);
-                    var message = obj.message;
-                    var itemList = obj.itemList;
-                    var $this = $(this);
-                    $('.p-j-redBag').removeClass('animated bounceIn');
-                    var itemNameHtml = "";
-                    for (var i = 0; i < itemList.length; i++) {
-                        var item = itemList[i];
-                        itemNameHtml += item.itemName + "X" + item.count;
-                        if (i < itemList.length - 1) {
-                            itemNameHtml += "</br>";
-                        }
-                        chat.server.updateMsg(item.userName, item.itemName + "X" + item.count, item.dateTime);
-                    }
-
-                    console.log(itemNameHtml);
-                    setTimeout(function () {
-                        $("#txt_title").html("道具");
-                        $("#txt_number").html(itemNameHtml);
-                        $("#txt_unit").html();
-                        //chat.server.updateMsg(obj.userName, obj.itemName, obj.dateTime, count);
-                        $this.hide();
-                        $('.p-j-openedBag').removeClass('none');
-                        $('.p-j-redBag').css({
-                            background: 'url(/../../Content/images/client/InfoExpert/luckyMoney2.png) no-repeat center bottom'
-                        });
-                    }, 1000);
-                });
+                
             });
 
             function reflash() {
@@ -450,10 +480,16 @@
         //显示红包
         (function () {
             if (<%=isDrop %> == "1") {    //有点机会掉落红包
-                $('.p-j-redBag').css('z-index', '1000').show();
-                $('body').mask();
+               ShowItem();
             }
         })();
+
+        function ShowItem()
+        {
+          
+         $('.p-j-redBag').css('z-index', '1000').show();
+                $('body').mask();
+        }
 
         $('.p-j-openedBag').find('a#p-j-receive').click(function () {
             $('body').unmask();
@@ -608,7 +644,53 @@
 
             }
         });
-       
+
+        function OpenItem(obj) {
+            var url = $(obj).attr("url");
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {},
+                dataType: 'json',
+                error: function () {
+                    MZ.msgbox.show("未知错误，请联系服务器管理员，或者刷新页面重试！", 5, 2000);
+                },
+                success: function (_data) {
+
+                    var data = _data[0];
+                    var _avaiableDropTimes = data.avaiableDropTimes;
+
+                    var _isDropCompleted = data.isDropCompleted;
+                    var _Item = data.Item;
+                    var _nextAvaiableCoolTime = data.nextAvaiableCoolTime;
+                    var _nextItemDropHasCD = data.nextItemDropHasCD;
+                    var _pageCanDropItem = data.pageCanDropItem;
+                    var _succeed = data.succeed;
+                    var _errorMsg = data.errorMsg;
+                    if (_succeed == "false") {
+                        MZ.msgbox.show(_errorMsg, 5, 2000);
+                    } else {
+                        itemMsgResult = _Item;
+                        if (data.isDrop == "1") {
+
+                            $("#txt_number").html("");
+                            $("#txt_title").html("");
+                            $("#txt_unit").html("");
+                            ShowItem();
+                            nextAvaiableCoolTime = _nextAvaiableCoolTime;
+                            setInterval(GetLatestTime(), 1000);
+                            $("#avaiableDropTimesSpan").html(_avaiableDropTimes);
+                        } else {
+                            if (_nextItemDropHasCD == "True") {
+                                MZ.msgbox.show("宝箱CD中", 5, 2000);
+                            } else {
+                                MZ.msgbox.show("无掉落物品", 5, 2000);
+                            }
+                        }
+                    }
+                }
+            });
+        } 
 
       
     </script>

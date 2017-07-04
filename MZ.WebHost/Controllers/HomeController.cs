@@ -140,6 +140,7 @@ namespace Yinhe.WebHost.Controllers
                     }
                 }
             }
+             
             result = dataOp.BatchSaveStorageData(dataList);
             return Json(TypeConvert.InvokeResultToPageJson(result));
         }

@@ -141,10 +141,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="Yinhe.ProcessingCenter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Library\ProcessingCenter\Yinhe.ProcessingCenter.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControllerBase\MainBase.cs" />
@@ -3717,6 +3713,8 @@
     <Content Include="Views\KnowledgeMindMap\MindMapUpLoadArticle.aspx" />
     <Content Include="Views\KnowledgeMindMap\ItemRecord.ascx" />
     <Content Include="Views\KnowledgeMindMap\PersonalCenter.aspx" />
+    <Content Include="Views\KnowledgeMindMap\MindMapRank.aspx" />
+    <Content Include="Views\KnowledgeMindMap\MindMapRankDetail.ascx" />
     <Content Include="Views\LogReport\Index.aspx" />
     <Content Include="Views\LogReport\LogInfoList.ascx" />
     <Content Include="Views\LogReport\XHLogIndex.aspx" />
@@ -3984,6 +3982,10 @@
     <WCFMetadataStorage Include="Service References\ServiceReference1\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\A3\Yinhe.ProcessingCenter\Yinhe.ProcessingCenter.csproj">
+      <Project>{09B5BB08-C041-466F-8AAA-0E4C49747B6B}</Project>
+      <Name>Yinhe.ProcessingCenter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MZ.BusinessLogicLayer\MZ.BusinessLogicLayer.csproj">
       <Project>{B389AF7B-F060-4F3B-9C74-4ECD9348D023}</Project>
       <Name>MZ.BusinessLogicLayer</Name>

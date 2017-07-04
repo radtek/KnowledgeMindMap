@@ -675,6 +675,69 @@ namespace MZ.BusinessLogicLayer
             var articleIds = dataOp.FindAllByQuery("MindMapArticle", Query.EQ("createUserId", userId)).SetFields("articleId").Select(c => c.Text("articleId")).ToList();
             return articleIds;
         }
+
+        /// <summary>
+        /// 获取文章排行
+        /// </summary>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        public List<BsonDocument> GetArticleRank(int top)
+        {
+            SortByDocument sort = new SortByDocument { { "socre", -1 } };
+            var allArticleList = dataOp.FindLimitByQuery("MindMapArticle", null, sort, 0, top).SetFields("name", "articleId", "updateUserId", "updateDate", "viewCount", "replyCount", "favoriateCount", "priseCount", "socre").ToList();
+            return allArticleList;
+        }
+
+        /// <summary>
+        /// 获取用户排行
+        /// </summary>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        public List<BsonDocument> GetUserRank(int top)
+        {
+            SortByDocument sort = new SortByDocument { { "weightCount", -1 } };
+            var allArticleList = dataOp.FindLimitFieldsByQuery("SysUser", Query.And(Query.NE("status", "2"), Query.GT("weightCount", 0)), sort, 0, top, new string[] { "name", "userId", "weightCount", "viewCount", "replyCount", "favoriateCount", "priseCount" }).ToList();
+            return allArticleList;
+        }
+
+
+        /// <summary>
+        /// 获取用户金币排行
+        /// </summary>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        public List<BsonDocument> GetUserCoinRank(int top)
+        {
+            SortByDocument sort = new SortByDocument { { "coin", -1 } };
+            var allArticleList = dataOp.FindLimitFieldsByQuery("SysUser", Query.And(Query.NE("status", "2"), Query.GT("coin", 0)), sort, 0, top, new string[] { "name", "userId", "weightCount", "viewCount", "replyCount", "favoriateCount", "priseCount", "coin" }).ToList();
+            return allArticleList;
+        }
+
+        /// <summary>
+        /// 获取部门排行
+        /// </summary>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        public List<BsonDocument> GetDepartRank(int top)
+        {
+            var allProfList = dataOp.FindAll("System_Professional").ToList();
+            SortByDocument sort = new SortByDocument { };
+            var allUserList = dataOp.FindFieldsByQuery("SysUser", Query.NE("status", "2"), new string[] { "profId", "weightCount", "viewCount", "replyCount", "favoriateCount", "priseCount", "articleCount" }).ToList();
+            foreach (var sysProf in allProfList)
+            {
+                var hitUserList = allUserList.Where(c => c.Text("profId") == sysProf.Text("profId")).ToList();
+                if (hitUserList.Count > 0)
+                {
+                    sysProf.Set("viewCount", hitUserList.Sum(c => c.Int("viewCount")));
+                    sysProf.Set("replyCount", hitUserList.Sum(c => c.Int("replyCount")));
+                    sysProf.Set("favoriateCount", hitUserList.Sum(c => c.Int("favoriateCount")));
+                    sysProf.Set("priseCount", hitUserList.Sum(c => c.Int("priseCount")));
+                    sysProf.Set("articleCount", hitUserList.Sum(c => c.Int("articleCount")));
+                    sysProf.Set("weightCount", GetArticleWeighCount(sysProf));
+                }
+            }
+            return allProfList.OrderByDescending(c=>c.Double("weightCount")).ToList();
+        }
         #endregion
         
         #region 文章统计Count
@@ -854,6 +917,28 @@ namespace MZ.BusinessLogicLayer
         #endregion
         #region 文章操作
         /// <summary>
+        ///  更新用户状态
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public void UpdateUserArticleStatus(string userId)
+        {
+            var hitArticle = dataOp.FindFieldsByQuery("MindMapArticle", Query.EQ("createUserId", userId), new string[] {"articleId","viewCount", "replyCount", "favoriateCount", "priseCount","score" }).ToList();
+            var updateBosnDocument=new BsonDocument();
+            if (hitArticle.Count > 0)
+            {
+                updateBosnDocument.Add("articleCount", hitArticle.Count);
+                updateBosnDocument.Add("viewCount", hitArticle.Sum(c => c.Int("viewCount")));
+                updateBosnDocument.Add("replyCount", hitArticle.Sum(c => c.Int("replyCount")));
+                updateBosnDocument.Add("favoriateCount", hitArticle.Sum(c => c.Int("favoriateCount")));
+                updateBosnDocument.Add("priseCount", hitArticle.Sum(c => c.Int("priseCount")));
+                updateBosnDocument.Set("weightCount", GetArticleWeighCount(updateBosnDocument));
+                DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "SysUser", Document = updateBosnDocument, Query = Query.EQ("userId", userId), Type = Yinhe.ProcessingCenter.DataRule.StorageType.Update });
+                QuickStartDBChangeProcess();
+            }
+        }
+
+        /// <summary>
         /// 更新文章
         /// </summary>
         /// <param name="articleId"></param>
@@ -874,7 +959,8 @@ namespace MZ.BusinessLogicLayer
             {
                 curArticle = updateBson;
                 result = dataOp.Insert("MindMapArticle", curArticle);
-               
+                //更新用户文章量
+                UpdateUserArticleStatus(curArticle.Text("createUserId"));
             }
             else
             {
@@ -911,6 +997,7 @@ namespace MZ.BusinessLogicLayer
             }
             StartDBChangeQueue(null);
             UpdateMindMapArticleStaticCount(articleId);
+            UpdateUserArticleStatus(userId);
             #region 添加操作日志
             LogOperation(new BsonDocument().Add("articleId",articleId).Add("status",curArticle.Text("deleteStatus")).Add("userId",userId),MindMapOperateType.Favoriate);
             #endregion
@@ -945,6 +1032,7 @@ namespace MZ.BusinessLogicLayer
             }
             StartDBChangeQueue(null);
             UpdateMindMapArticleStaticCount(articleId);
+            UpdateUserArticleStatus(userId);
             //添加操作日志
             LogOperation(new BsonDocument().Add("articleId",articleId).Add("status",curArticle.Text("deleteStatus")).Add("userId",userId),MindMapOperateType.Praise);
             return result;
@@ -1480,19 +1568,70 @@ namespace MZ.BusinessLogicLayer
             var allArticle = new List<BsonDocument>();
             if (allCount <= 1000)
             {
-                allArticle = dataOp.FindAll("MindMapArticle").SetFields("articleId", "createDate", "weightCount", "viewCount", "replyCount", "priseCount", "favoriateCount").ToList();
+                allArticle = dataOp.FindAll("MindMapArticle").SetFields("articleId", "createDate", "weightCount", "viewCount", "replyCount", "priseCount", "favoriateCount","createUserId").ToList();
             }
             else {
-                allArticle = dataOp.FindAllByQuery("MindMapArticle", Query.GT("weightCount", latestStaticCount)).SetFields("articleId", "createDate", "weightCount", "viewCount", "replyCount", "priseCount", "favoriateCount").ToList();
+                allArticle = dataOp.FindAllByQuery("MindMapArticle", Query.GT("weightCount", latestStaticCount)).SetFields("articleId", "createDate", "weightCount", "viewCount", "replyCount", "priseCount", "favoriateCount","createUserId").ToList();
             }
-                foreach (var article in allArticle)
+            //2017.5.11对自己上传的文章的得分汇总，每天定时变化，
+            //var userList = new List<BsonDocument>();
+            foreach (var article in allArticle)
             {
+              
                 var socre = GenerateArticleScore(article);
                 DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "MindMapArticle", Document = new BsonDocument().Add("socre",  socre),Query=Query.EQ("articleId",article.Text("articleId")), Type = StorageType.Update });
+                
+                //#region 用户文章分数汇总
+                //var hitUserObj = userList.Where(c => c.Text("userId") == article.Text("createUserId")).FirstOrDefault();
+                //if (hitUserObj == null)
+                //{
+                //    hitUserObj = new BsonDocument().Add("userId", article.Text("createUserId")).Add("articleScore", socre);
+                //    userList.Add(hitUserObj);
+                //}
+                //else
+                //{
+                //    hitUserObj.Set("articleScore",hitUserObj.Double("articleScore") + socre);
+                //   // hitUserObj.Set("articleCount", hitUserObj.Int("articleCount") + 1);
+                //}
+                //#endregion
             }
+
+
+            /////更新用户文章数 与
+            //if (userList.Count() > 0)
+            //{
+            //    userList.ForEach(c => DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "SysUser", Document = new BsonDocument().Add("articleScore", c.Double("articleScore")), Query = Query.EQ("userId", c.Text("userId")), Type = StorageType.Update }));
+            //}
             QuickStartDBChangeProcess();
             return allArticle.Count();
        }
+        /// <summary>
+        ///  更新用户得分
+        /// </summary>
+        public int UpdateUserCoinService()
+        {
+            var EPersonItemList = dataOp.FindFieldsByQuery("Expert_PersonItem",null,new string[]{"itemId","userId"}).ToList();
+            var hitUserIds = EPersonItemList.Select(c => c.Text("userId")).Distinct().ToList();
+            var itemHelper = new ItemHelper();
+            var allItem = itemHelper.GetAllItem();
+           
+            foreach (var userId in hitUserIds)
+            {
+                var sumMoney = 0;
+                var hitItemList = EPersonItemList.Where(c => c.Text("userId") == userId).Select(c => c.Text("itemId")).ToList();
+                foreach (var itemId in hitItemList)
+                {
+                    var hitItem = allItem.Where(c => itemId == c.Text("_id")).FirstOrDefault();
+                    if (hitItem == null) continue;
+                    sumMoney += hitItem.Int("value");
+                }
+                DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "SysUser", Document = new BsonDocument().Add("coin", sumMoney), Query = Query.EQ("userId", userId), Type = StorageType.Update });
+            }
+           
+            QuickStartDBChangeProcess();
+            return hitUserIds.Count();
+        }
+
         /// <summary>
         /// 生成文章得分
         /// </summary>
@@ -1547,7 +1686,8 @@ namespace MZ.BusinessLogicLayer
           var replyCount =doc.Double("replyCount");
           var priseCount = doc.Double("priseCount");
           var favoriateCount = doc.Double("favoriateCount");
-          return viewCount * 0.1 + replyCount * 0.2 + priseCount * 0.3 + favoriateCount * 0.4;
+          var articleCount = doc.Double("articleCount");//文章数，用户对象拥有
+          return viewCount * 0.1 + replyCount * 0.1 + priseCount * 0.3 + favoriateCount * 0.4+articleCount*0.1;
         }
 
         #region 定时更新脉络图索引

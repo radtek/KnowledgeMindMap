@@ -84,6 +84,9 @@ namespace MZ.BusinessLogicLayer
                 var count=MindMapBll._().UpdateArticleScoreService();
                 ShowMessageInfo("结束更新UpdateArticleScoreService更新了" + count + "条记录");
 
+                ShowMessageInfo("开始更新UpdateUserCoin");
+                var userCount = MindMapBll._().UpdateUserCoinService();
+                ShowMessageInfo("结束更新UpdateUserCoin更新了" + userCount + "条记录");
                 if (DateTime.Now.Hour >= 23)
                 {
                       ShowMessageInfo("开始UpdateMindMapLabelCollection");

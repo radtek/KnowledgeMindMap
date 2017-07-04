@@ -104,6 +104,16 @@ namespace Yinhe.WebHost.Controllers
         {
             return View();
         }
+
+        public ActionResult MindMapRank()
+        {
+            return View();
+        }
+        public ActionResult MindMapRankDetail()
+        {
+            return View();
+        }
+        
         /// <summary>
         /// 广播用 掉落物品记录页
         /// </summary>
@@ -119,10 +129,12 @@ namespace Yinhe.WebHost.Controllers
         /// type = error|item|exp
         /// </summary>
         /// <returns></returns>
-        public string ItemDrop(int dropCount=1)
+        public string ItemDrop(int dropCount)
         {
             if (this.CurrentUserId > 0)
             {
+               
+               
                 var itemHelper = new ItemHelper(dataOp);
                 var itemResult = itemHelper.DailyItemDrop(this.CurrentUserId.ToString(), dropCount); //物品掉落
                 if (itemResult.Status == Status.Successful)
@@ -852,11 +864,16 @@ namespace Yinhe.WebHost.Controllers
         /// <param name="filterContext"></param>
         /// <returns></returns>
         private int GetUrlHashCode(ActionExecutingContext filterContext)
-        { 
-            int urlHashCode =0;
+        {
+            return GetUrlHashCode(filterContext.HttpContext.Request);
+        }
+
+        private int GetUrlHashCode(HttpRequestBase request)
+        {
+            int urlHashCode = 0;
             try
             {
-                HttpRequestBase request = filterContext.HttpContext.Request;
+                //HttpRequestBase request = filterContext.HttpContext.Request;
                 var method = request.HttpMethod;//post/get
                 var paramBson = new BsonDocument();
                 if (method == "GET")
@@ -875,12 +892,10 @@ namespace Yinhe.WebHost.Controllers
             }
             return urlHashCode;
         }
+
         #region 动作执行前 是否有宝箱
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            ItemHelper itemHelper = new ItemHelper();
-            int cdTime = ItemHelper.DROPCDTIME; ;
-            int EXPERTOBJECTKEYTIME = ItemHelper.EXPERTOBJECTKEYTIME;//0.5天重置
             var actionArray = new Dictionary<string, int>();
             actionArray.Add("MindMapSearch", 1);
             actionArray.Add("MindMapLabelDetail", 1);
@@ -891,11 +906,25 @@ namespace Yinhe.WebHost.Controllers
                 return;
             }
             var drouCount = actionArray[actionName];//掉落个数
+            int urlHashCode = GetUrlHashCode(filterContext);
+            ItemDropActionCheck(urlHashCode, drouCount);
+            RouteData.Values.Add("urlHashCode", urlHashCode.ToString()); // 掉落次数结束
+        }
+        /// <summary>
+        /// 掉落动作执行
+        /// </summary>
+        /// <param name="urlHashCode"></param>
+        public void  ItemDropActionCheck(int urlHashCode,int drouCount=1)
+        {
+            ItemHelper itemHelper = new ItemHelper();
+            int cdTime = ItemHelper.DROPCDTIME; ;
+            int EXPERTOBJECTKEYTIME = ItemHelper.EXPERTOBJECTKEYTIME;//0.5天重置
+            
             var canContinue = true;
             RouteData.Values.Add("pageCanDropItem", "1"); //当前页面可掉落物品
             var avaiableDropTimes = itemHelper.ExecDailyItemDropTimes(dataOp.GetCurrentUserId().ToString());
             RouteData.Values.Add("avaiableDropTimes", avaiableDropTimes.ToString()); // 掉落次数结束
-            
+
             #region 掉落cd 2分钟
             var itemDropTime = PageReq.GetObjSession("itemDropTime") as DateTime?;
             if (itemDropTime != null && itemDropTime.HasValue)
@@ -909,8 +938,8 @@ namespace Yinhe.WebHost.Controllers
             }
             #endregion
             #region 防止每次刷新都掉落数据，2017.4.24 新增浏览不同数据才进行掉落
-            int urlHashCode = GetUrlHashCode(filterContext);
-            var viewExpertObjCacheKey = string.Format("EXPERTOBJECTKEY_{0}",this.CurrentUserId);
+          
+            var viewExpertObjCacheKey = string.Format("EXPERTOBJECTKEY_{0}", this.CurrentUserId);
             var expertUrlQueue = CacheHelper.GetCache(viewExpertObjCacheKey) as List<int>;
             if (expertUrlQueue != null)
             {
@@ -926,28 +955,97 @@ namespace Yinhe.WebHost.Controllers
             }
             #endregion
 
-          
+
             //剩余获得次数
-            if (!canContinue||avaiableDropTimes <= 0) //每日获得上限
+            if (!canContinue || avaiableDropTimes <= 0) //每日获得上限
             {
-             
-                return;
+
+                return ;
             }
-
-                string jsonResult = this.ItemDrop(drouCount);
-                if (jsonResult.Contains("道具"))
+            #region 判断字符可靠性
+            var t = PageReq.GetParam("t");
+            var sign = PageReq.GetParam("sign");
+            //页面上的url字符串
+            if (!string.IsNullOrEmpty(sign))
+            {
+                if (string.IsNullOrEmpty(t))
                 {
-                    ///有掉落才限制同一个url半天不能访问一次
-                    if (expertUrlQueue != null)
-                    {
-                        expertUrlQueue.Add(urlHashCode);
-                    }
-                    RouteData.Values.Add("Item", jsonResult);
-                    RouteData.Values.Add("isDrop", "1"); //将是否有宝箱标志加到路由中
+                    RouteData.Values.Add("errorMsg", "随机数参数不能为空");
+                    return;
                 }
+                if (PageReq.UrlCheckSign() )
+                {
+                    DateTime curDate;
+                    IFormatProvider ifp = new System.Globalization.CultureInfo("zh-CN", true);
+                    if(!DateTime.TryParseExact(t,"yyyyMMddHHmmss",ifp,System.Globalization.DateTimeStyles.None,out curDate))
+                    {
+                        RouteData.Values.Add("errorMsg", "参数传入有误");
+                        return;
+                    }
+                    if ((DateTime.Now - curDate).TotalMinutes >= 1)
+                    {
+                        RouteData.Values.Add("errorMsg", "token超时");
+                        return;
+                    }
+                    drouCount = SysAppConfig.Mission_HellItemDropCount;//掉落个数提升
+                }
+                else
+                {
+                    RouteData.Values.Add("errorMsg", "token失效");
+                    return;
+                }
+            }
+            #endregion
            
+            string jsonResult = this.ItemDrop(drouCount);
+            if (jsonResult.Contains("道具"))
+            {
+                ///有掉落才限制同一个url半天不能访问一次
+                if (expertUrlQueue != null)
+                {
+                    expertUrlQueue.Add(urlHashCode);
+                }
+                RouteData.Values.Add("Item", jsonResult);
+                RouteData.Values.Add("isDrop", "1"); //将是否有宝箱标志加到路由中
+            }
         }
-
+        /// <summary>
+        /// 开启宝箱
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult OpenItem()
+        {
+            var t = PageReq.GetParam("t");
+            var sign = PageReq.GetParam("sign");
+            if (string.IsNullOrEmpty(sign) || string.IsNullOrEmpty(t))
+            {
+                var errorResult = new[] { "" }.Select(d => new { succeed = "false", errorMsg = "参数输入有误" });
+                return Json(errorResult);
+            }
+            var urlHashCode = PageReq.GetParamInt("urlHashCode");
+            ItemDropActionCheck(urlHashCode);
+            var isDrop = RouteData.Values["isDrop"] as String ?? "0"; //是否掉落
+            var isDropCompleted = RouteData.Values["isDropCompleted"] as String ?? "0"; //是否攻略
+            var avaiableDropTimes =  RouteData.Values["avaiableDropTimes"] as String ?? "0"; //是否掉落次数为0
+            var nextAvaiableCoolTimeStr = RouteData.Values["nextAvaiableCoolTime"] as String ?? ""; //是否掉落次数为0
+            var pageCanDropItem =  RouteData.Values["pageCanDropItem"] as String ?? ""; //页面是否可掉落道具
+            var Item = RouteData.Values["Item"] as String ?? "";
+            var errorMsg = RouteData.Values["errorMsg"] as String ?? "";
+            var nextItemDropHasCD = false;
+            var nextAvaiableCoolTime = DateTime.Now;
+            if (!string.IsNullOrEmpty(nextAvaiableCoolTimeStr))
+            {
+                nextItemDropHasCD = true;
+                nextAvaiableCoolTime = DateTime.Parse(nextAvaiableCoolTimeStr);
+            }
+            var succeed = "true";
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                succeed = "false";
+            }
+            var result=new []{""}.Select(d=>new {succeed=succeed,errorMsg=errorMsg, isDrop=isDrop,isDropCompleted=isDropCompleted,avaiableDropTimes=avaiableDropTimes,nextAvaiableCoolTimeStr=nextAvaiableCoolTimeStr,pageCanDropItem=pageCanDropItem, Item=Item, nextItemDropHasCD=nextItemDropHasCD,nextAvaiableCoolTime=nextAvaiableCoolTime  });
+            return Json(result);
+        }
         #endregion
     }
 }

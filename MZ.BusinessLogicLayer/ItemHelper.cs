@@ -805,7 +805,7 @@ namespace MZ.BusinessLogicLayer
 
             var curUserPoint = curUser.Int("point");
             var curUserExp = curUser.Int("exp");
-
+             var curUserCoin = curUser.Int("coin");
             ////设定每天最大掉落次数
             //var hellChallengeCount = SysAppConfig.Mission_HellChallengeCount;
             ////当天获得物品数
@@ -852,6 +852,8 @@ namespace MZ.BusinessLogicLayer
                     insertItem.Add("itemId", hitEquipment.Text("_id"));
                     insertItem.Add("rarity", hitEquipment.Text("rarity"));
                     insertItem.Add("userId", curUser.Text("userId"));
+                    //coin增加
+                    curUserCoin+=hitEquipment.Int("value");
 
                     //个人物品获得
                     storageDataList.Add(new StorageData()
@@ -939,6 +941,7 @@ namespace MZ.BusinessLogicLayer
                     nextUserLevel = 0;
                 }
                 updateBoson.Add("exp", curUserExp.ToString());
+                updateBoson.Add("coin", curUserCoin);
                 storageDataList.Add(new StorageData()
                 {
                     Document = updateBoson,
@@ -973,5 +976,7 @@ namespace MZ.BusinessLogicLayer
         }
 
         #endregion
+
+       
     }
 }

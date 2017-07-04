@@ -24,6 +24,41 @@ namespace Yinhe.WebHost
             return checkPath.StartsWith("~/Plugins/", StringComparison.InvariantCultureIgnoreCase);
         }
 
+
+        /// <summary>
+        /// 通过读取程序及获取内容资源名,  防止内存溢出
+        /// </summary>
+        /// <param name="assemblyName"></param>
+        /// <returns></returns>
+        public string[] GetAssemblyResourceNames(string assemblyName)
+        {
+            var assemblyCachaName = string.Format("GetAssemblyResourceNames_{0}", assemblyName);
+            var hitCacheObj = Yinhe.ProcessingCenter.CacheHelper.GetCache(assemblyCachaName);
+
+            if (hitCacheObj == null)
+            {
+                byte[] assemblyBytes = File.ReadAllBytes(assemblyName);
+                Assembly assembly = Assembly.Load(assemblyBytes);
+                if (assembly != null)
+                {
+                    var resourceList = assembly.GetManifestResourceNames();
+                    Yinhe.ProcessingCenter.CacheHelper.SetCache(assemblyCachaName, resourceList, null, DateTime.Now.AddDays(30));
+                    return resourceList;
+
+                }
+                else
+                {
+                    Yinhe.ProcessingCenter.CacheHelper.SetCache(assemblyCachaName, new string[] { }, null, DateTime.Now.AddDays(30));
+                    return null;
+                }
+
+            }
+            else
+            {
+                return hitCacheObj as string[];
+            }
+
+        }
         /// <summary>
         /// 重写System.Web.Hosting.VirtualPathProvider.FileExists,获取一个值，该值指示文件是否存在于虚拟文件系统中
         /// </summary>
@@ -39,16 +74,14 @@ namespace Yinhe.WebHost
                 string resourceName = parts[3];         //对应资源名称
 
                 assemblyName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins", assemblyName);  //获取对应程序集的文件
-            byte[] assemblyBytes = File.ReadAllBytes(assemblyName);
-                Assembly assembly = Assembly.Load(assemblyBytes);
+                string[] resourceList = GetAssemblyResourceNames(assemblyName);
 
-                if (assembly != null)
+                if (resourceList != null)
                 {
-                    string[] resourceList = assembly.GetManifestResourceNames();
                     //TextLog.writeLog(String.Join("   ", resourceList));
                     bool found = Array.Exists(resourceList, delegate(string r) { return r.Equals(resourceName); });
-
                     return found;
+
                 }
                 return false;
             }

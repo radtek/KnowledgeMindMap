@@ -44,7 +44,7 @@
                 <a href="/KnowledgeMindMap/MindMapArticleNow?articleId=<%=articleId %>"><i class="icon-edit mr2" style="font-size: 16px;"></i>进入编辑</a>
             </div>
             <div>
-                <i class="p-icon_user mr5 ml10"></i><%=article.CreateUserName()%><span class="pl10" style="border-right: 1px solid #ddd;"></span>
+                <i class="p-icon_user mr5 ml10"></i><a href="/KnowledgeMindMap/PersonalCenter?userId=<%=article.Text("createUserId") %>"><%=article.CreateUserName()%></a><span class="pl10" style="border-right: 1px solid #ddd;"></span>
                 <i class="p-icon_browse mr5 ml10"></i>阅读量：<%=viewCount%><span class="pl10" style="border-right: 1px solid #ddd;"></span>
                 <i class="p-icon_comment mr5 ml10"></i>评论：<%=commentCount%><span class="pl10" style="border-right: 1px solid #ddd;"></span>
                 <a href="javascript:;" onclick="UpdateMindMapArticlePrise(this)"><%if (hasUserPrised)
