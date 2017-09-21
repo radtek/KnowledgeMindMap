@@ -1097,19 +1097,49 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99eeeeee, endCo
 .p-j-redBag
 {
     width:500px; 
-    height:412px; 
-    background:url(/../../Content/images/client/InfoExpert/luckyMoney1.png) no-repeat center bottom; 
+    height:500px; 
     position:fixed; 
-    top:50%; 
+    top:25%; 
     left:50%; 
     margin-top:-350px; 
     margin-left:-206px;
     }
-.p-j-redBag .p-j-openBag{width:70px; height:70px;position:absolute;top:231px;left:218px; cursor:pointer;}
+.p-j-redBag .p-j-openBag{width:70px; height:70px;position:absolute;top:320px;left:218px; cursor:pointer;}
 .p-j-redBag .p-j-openedBag{position: absolute; top: 100px; left: 5px; width: 500px; height: 260px;color: white; text-align: center}
 .p-j-openedBag .sumMoney{margin-top: 110px; margin-bottom: 10px;}
 .p-j-openedBag a{padding: 5px 30px; background-color: white; color: red; font-size: 12px; cursor:pointer;}
+.p-j-redBag_content{width:500px; height:500px;position: absolute; z-index:1000;background:url(/../../Content/images/client/InfoExpert/luckyMoney1.png) no-repeat center bottom; }
+.p-bg{position: absolute;z-index: 999;border-radius:50%;background:url(/../../Content/images/client/InfoExpert/light.png) 0px 0px no-repeat;background-size:500px auto;width:500px;height:500px; max-height:100%; left:45%;margin-left:-225px;top:22%;}
+.p-rotate{animation: rotate 10s  infinite  linear;}
+@keyframes rotate {
+    0% {
+        -webkit-transform:rotate(0deg);
+    }
+    100% {
+        -webkit-transform:rotate(360deg);
+    }
+
+}
 /*----------红包--end----------*/
+
+/*----------积分兑换----------*/
+.p-title1{font-size:22px; padding-bottom:15px; border-bottom:1px solid #aaa; margin-bottom:20px; font-weight:bold;}
+.p-itemBox .money{padding-bottom:12px; font-size:16px; color:#333; margin-bottom:15px; font-weight:bold;}
+.p-itemBox .money span{font-size:25px; color:#ec2c2c;}
+.p-itemBox .item{padding:15px 0; font-size:16px; color:#888; cursor:pointer;}
+.p-itemBox .item a{padding-left:36px;}
+.p-itemBox .item.active{color:#333; background-color:#eee; font-weight:bold;}
+.p-itemBox .item.active a{padding-left:33px;border-left:3px solid #ec2c2c;}
+.p-itemBox .item:hover{color:#333; background-color:#eee;}
+.p-icon-moneyBag{background-image:url(/../Content/images/client/InfoExpert/icon/icon-money.png); width:22px; height:22px;display:inline-block;margin-bottom:-3px;}
+
+.p-exchangeList li{margin-right:30px; margin-bottom:20px; float:left; text-align:center;}
+.p-exchangeList li:hover{box-shadow:0 0 5px #666; cursor:pointer;}
+.p-exchangeList li .exchangeImg{width:263px; height:263px; display:table-cell; vertical-align:middle;}
+.p-exchangeList li .exchangeImg img{ display:block;}
+.p-exchangeList li .exchangeName{background-color:#efefef; height:70px; font-size:14px; padding:5px; border:1px solid #ccc;}
+/*----------积分兑换--end----------*/
+
 /*----------动画--start----------*/
 .animated
         {
@@ -1143,6 +1173,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99eeeeee, endCo
             transform-origin:top center;
             -webkit-animation-name:swing;animation-name:swing
             }
+            
+            
         @-webkit-keyframes 
         bounceIn
         {
@@ -1163,5 +1195,32 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99eeeeee, endCo
         {
             -webkit-animation-name:bounceIn;
             animation-name:bounceIn
+            }
+            
+        @-webkit-keyframes 
+        flip
+        {
+            0%{-webkit-transform:perspective(400px) translateZ(0) rotateY(0) scale(1);transform:perspective(400px) translateZ(0) rotateY(0) scale(1);-webkit-animation-timing-function:ease-out;animation-timing-function:ease-out}
+            40%{-webkit-transform:perspective(400px) translateZ(150px) rotateY(170deg) scale(1);transform:perspective(400px) translateZ(150px) rotateY(170deg) scale(1);-webkit-animation-timing-function:ease-out;animation-timing-function:ease-out}
+            50%{-webkit-transform:perspective(400px) translateZ(150px) rotateY(190deg) scale(1);transform:perspective(400px) translateZ(150px) rotateY(190deg) scale(1);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}
+            80%{-webkit-transform:perspective(400px) translateZ(0) rotateY(360deg) scale(.95);transform:perspective(400px) translateZ(0) rotateY(360deg) scale(.95);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}
+            100%{-webkit-transform:perspective(400px) translateZ(0) rotateY(360deg) scale(1);transform:perspective(400px) translateZ(0) rotateY(360deg) scale(1);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}
+            }
+        @keyframes 
+        flip
+        {
+            0%{-webkit-transform:perspective(400px) translateZ(0) rotateY(0) scale(1);-ms-transform:perspective(400px) translateZ(0) rotateY(0) scale(1);transform:perspective(400px) translateZ(0) rotateY(0) scale(1);-webkit-animation-timing-function:ease-out;animation-timing-function:ease-out}
+            40%{-webkit-transform:perspective(400px) translateZ(150px) rotateY(170deg) scale(1);-ms-transform:perspective(400px) translateZ(150px) rotateY(170deg) scale(1);transform:perspective(400px) translateZ(150px) rotateY(170deg) scale(1);-webkit-animation-timing-function:ease-out;animation-timing-function:ease-out}
+            50%{-webkit-transform:perspective(400px) translateZ(150px) rotateY(190deg) scale(1);-ms-transform:perspective(400px) translateZ(150px) rotateY(190deg) scale(1);transform:perspective(400px) translateZ(150px) rotateY(190deg) scale(1);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}
+            80%{-webkit-transform:perspective(400px) translateZ(0) rotateY(360deg) scale(.95);-ms-transform:perspective(400px) translateZ(0) rotateY(360deg) scale(.95);transform:perspective(400px) translateZ(0) rotateY(360deg) scale(.95);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}
+            100%{-webkit-transform:perspective(400px) translateZ(0) rotateY(360deg) scale(1);-ms-transform:perspective(400px) translateZ(0) rotateY(360deg) scale(1);transform:perspective(400px) translateZ(0) rotateY(360deg) scale(1);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}
+            }
+        .flip
+        {
+            -webkit-backface-visibility:visible;
+            -ms-backface-visibility:visible;
+            backface-visibility:visible;
+            -webkit-animation-name:flip;
+            animation-name:flip
             }
 /*----------动画--end----------*/

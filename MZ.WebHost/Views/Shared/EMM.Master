@@ -155,24 +155,27 @@
             </div>
         </div>
     </div>
-    <div class="animated bounceIn p-j-redBag" style="display: none">
+    <div class="animated flip p-j-redBag" style="display: none">
         <%--红包未开启--%>
-        <a href="javascript:;" onclick="OpenBag()">
-        <div class="p-j-openBag">
-        </div>
-        </a>
-        <%--红包开启--%>
-        <div class="p-j-openedBag none">
-            <h1 id="txt_title">
-            </h1>
-            <div class="sumMoney">
-                <span class="fb" style="font-size: 20px;" id="txt_number"></span><span class="fb f20 ml10"
-                    style="" id="txt_unit"></span>
+        <div class="p-j-redBag_content">
+            <a href="javascript:;" onclick="OpenBag()">
+                <div class="p-j-openBag">
+                </div>
+            </a>
+            <%--红包开启--%>
+            <div class="p-j-openedBag none">
+                <h1 id="txt_title">
+                </h1>
+                <div class="sumMoney">
+                    <span class="fb" style="font-size: 20px;" id="txt_number"></span><span class="fb f20 ml10"
+                        style="" id="txt_unit"></span>
+                </div>
+                <a id="p-j-receive" >点击领取</a>
             </div>
-            <a id="p-j-receive" >点击领取</a>
         </div>
+        
+        <div class="p-bg p-rotate"></div>
     </div>
-    
              
    <%if (pageCanDropItem == "1"  )
      { %>              
@@ -267,7 +270,7 @@
                               <%--  <textarea id="message" class="rte-zone" rows="1" cols="1"></textarea>--%>
                                
                                      <div class="c_bg_eee"> 
-                                        <script id="message" type="text/plain" style=" height:63px"></script>
+                                        <script id="message" type="text/plain" style=" height:63px; overflow-y:auto;"></script>
                                         <div class="bt sendBox">
                                         <input type="button" id="send" class="btn" value="发送" />
                                         <input type="button" id="close" class="btn" value="关闭" style="display: none" />
@@ -408,7 +411,6 @@
     <script src="<%=SysAppConfig.HostDomain %>/signalr/hubs"></script>
     <script>
         var itemMsgResult = '<%= ViewContext.RouteData.Values["Item"] as String ?? "" %>';
-
         var chat = $.connection.chatHub;
         function OpenBag() {
            // $("#boxLink").hide();
@@ -419,7 +421,8 @@
             var message = obj.message;
             var itemList = obj.itemList;
             var $this = $(this);
-            $('.p-j-redBag').removeClass('animated bounceIn');
+            $('.p-j-redBag').removeClass('animated flip');
+            $('.p-j-redBag').addClass('animated swing');
             var itemNameHtml = "";
             for (var i = 0; i < itemList.length; i++) {
                 var item = itemList[i];
@@ -438,7 +441,7 @@
                 //chat.server.updateMsg(obj.userName, obj.itemName, obj.dateTime, count);
                 $this.hide();
                 $('.p-j-openedBag').removeClass('none');
-                $('.p-j-redBag').css({
+                $('.p-j-redBag_content').css({
                     background: 'url(/../../Content/images/client/InfoExpert/luckyMoney2.png) no-repeat center bottom'
                 });
             }, 1000);
@@ -483,12 +486,12 @@
                ShowItem();
             }
         })();
-
+        
         function ShowItem()
         {
           
-         $('.p-j-redBag').css('z-index', '1000').show();
-                $('body').mask();
+            $('.p-j-redBag').css('z-index', '1000').show();
+            $('body').mask();
         }
 
         $('.p-j-openedBag').find('a#p-j-receive').click(function () {
